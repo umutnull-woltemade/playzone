@@ -3,16 +3,9 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
 
-  // Cloudflare Pages deployment
+  // Vercel deployment
   nitro: {
-    preset: 'cloudflare-pages',
-    cloudflare: {
-      pages: {
-        routes: {
-          exclude: ['/ads.txt'],
-        },
-      },
-    },
+    preset: 'vercel',
   },
 
   modules: [
