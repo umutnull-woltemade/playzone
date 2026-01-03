@@ -23,15 +23,15 @@ const showCategories = ref(false)
 </script>
 
 <template>
-  <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-bg-void/95 backdrop-blur-lg border-b border-bg-subtle/50">
+  <header class="navbar">
     <div class="max-w-screen-2xl mx-auto h-full px-4 md:px-6 flex items-center gap-4">
       <!-- Logo -->
-      <NuxtLink to="/" class="flex items-center gap-2.5 text-text-primary shrink-0 group">
-        <div class="relative w-9 h-9 bg-gradient-to-br from-accent-primary to-accent-hover rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-glow transition-all">
+      <NuxtLink to="/" class="logo-link group">
+        <div class="logo-icon">
           <Icon name="ph:game-controller-fill" class="w-5 h-5 text-white" />
         </div>
         <span class="text-lg font-extrabold tracking-wide hidden sm:block">
-          <span class="text-text-primary">PLAY</span><span class="text-accent-primary">ZONE</span>
+          <span class="text-text-primary">PLAY</span><span class="gradient-text">ZONE</span>
         </span>
       </NuxtLink>
 
@@ -41,8 +41,8 @@ const showCategories = ref(false)
           v-for="item in navItems"
           :key="item.path"
           :to="item.path"
-          class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-text-secondary rounded-lg transition-all hover:text-text-primary hover:bg-bg-surface"
-          active-class="!text-accent-primary !bg-accent-muted"
+          class="nav-link"
+          active-class="nav-link-active"
         >
           <Icon :name="item.icon" class="w-4 h-4" />
           {{ item.label }}
@@ -51,7 +51,7 @@ const showCategories = ref(false)
         <!-- Categories Dropdown -->
         <div class="relative">
           <button
-            class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-text-secondary rounded-lg transition-all hover:text-text-primary hover:bg-bg-surface"
+            class="nav-link"
             @click="showCategories = !showCategories"
             @blur="setTimeout(() => showCategories = false, 150)"
           >
@@ -61,32 +61,29 @@ const showCategories = ref(false)
           </button>
 
           <!-- Dropdown Menu -->
-          <transition
-            enter-active-class="transition duration-150 ease-out"
+          <Transition
+            enter-active-class="transition duration-200 ease-out"
             enter-from-class="opacity-0 scale-95 -translate-y-2"
             enter-to-class="opacity-100 scale-100 translate-y-0"
-            leave-active-class="transition duration-100 ease-in"
+            leave-active-class="transition duration-150 ease-in"
             leave-from-class="opacity-100 scale-100 translate-y-0"
             leave-to-class="opacity-0 scale-95 -translate-y-2"
           >
-            <div
-              v-if="showCategories"
-              class="absolute top-full left-0 mt-2 w-56 bg-bg-surface rounded-xl border border-bg-subtle shadow-lg-dark overflow-hidden"
-            >
+            <div v-if="showCategories" class="dropdown-menu">
               <div class="p-2">
                 <NuxtLink
                   v-for="cat in moreCategories"
                   :key="cat.path"
                   :to="cat.path"
-                  class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-text-secondary rounded-lg hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                  class="dropdown-item"
                   @click="showCategories = false"
                 >
-                  <Icon :name="cat.icon" class="w-4 h-4 text-accent-primary" />
+                  <Icon :name="cat.icon" class="w-4 h-4 text-accent" />
                   {{ cat.label }}
                 </NuxtLink>
               </div>
             </div>
-          </transition>
+          </Transition>
         </div>
       </nav>
 
@@ -102,7 +99,7 @@ const showCategories = ref(false)
       <div class="flex items-center gap-2">
         <!-- Search Toggle (Mobile) -->
         <button
-          class="p-2.5 text-text-secondary rounded-lg transition-all hover:text-text-primary hover:bg-bg-surface md:hidden"
+          class="action-btn md:hidden"
           aria-label="Search"
           @click="isSearchOpen = !isSearchOpen"
         >
@@ -111,7 +108,7 @@ const showCategories = ref(false)
 
         <!-- Menu Toggle (Mobile) -->
         <button
-          class="p-2.5 text-text-secondary rounded-lg transition-all hover:text-text-primary hover:bg-bg-surface lg:hidden"
+          class="action-btn lg:hidden"
           aria-label="Menu"
           @click="isMobileMenuOpen = !isMobileMenuOpen"
         >
@@ -121,7 +118,7 @@ const showCategories = ref(false)
     </div>
 
     <!-- Mobile Search -->
-    <transition
+    <Transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="opacity-0 -translate-y-2"
       enter-to-class="opacity-100 translate-y-0"
@@ -129,16 +126,15 @@ const showCategories = ref(false)
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 -translate-y-2"
     >
-      <div
-        v-if="isSearchOpen"
-        class="absolute top-16 left-0 right-0 p-4 bg-bg-void/95 backdrop-blur-lg border-b border-bg-subtle md:hidden"
-      >
-        <SearchInput @search="isSearchOpen = false" />
+      <div v-if="isSearchOpen" class="mobile-panel md:hidden">
+        <div class="p-4">
+          <SearchInput @search="isSearchOpen = false" />
+        </div>
       </div>
-    </transition>
+    </Transition>
 
     <!-- Mobile Menu -->
-    <transition
+    <Transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="opacity-0 -translate-y-2"
       enter-to-class="opacity-100 translate-y-0"
@@ -146,18 +142,15 @@ const showCategories = ref(false)
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 -translate-y-2"
     >
-      <div
-        v-if="isMobileMenuOpen"
-        class="absolute top-16 left-0 right-0 bg-bg-void/95 backdrop-blur-lg border-b border-bg-subtle lg:hidden max-h-[80vh] overflow-y-auto"
-      >
+      <div v-if="isMobileMenuOpen" class="mobile-panel lg:hidden max-h-[80vh] overflow-y-auto">
         <nav class="p-4 space-y-1">
           <!-- Main Nav -->
           <NuxtLink
             v-for="item in navItems"
             :key="item.path"
             :to="item.path"
-            class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-text-secondary rounded-lg transition-all hover:text-text-primary hover:bg-bg-surface"
-            active-class="!text-accent-primary !bg-accent-muted"
+            class="mobile-nav-link"
+            active-class="mobile-nav-link-active"
             @click="isMobileMenuOpen = false"
           >
             <Icon :name="item.icon" class="w-5 h-5" />
@@ -165,7 +158,7 @@ const showCategories = ref(false)
           </NuxtLink>
 
           <!-- Divider -->
-          <div class="h-px bg-bg-subtle my-3" />
+          <div class="h-px bg-white/5 my-3" />
 
           <!-- Categories -->
           <p class="px-4 py-2 text-xs font-bold uppercase tracking-wider text-text-muted">Categories</p>
@@ -173,14 +166,104 @@ const showCategories = ref(false)
             v-for="cat in moreCategories"
             :key="cat.path"
             :to="cat.path"
-            class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-text-secondary rounded-lg transition-all hover:text-text-primary hover:bg-bg-surface"
+            class="mobile-nav-link"
             @click="isMobileMenuOpen = false"
           >
-            <Icon :name="cat.icon" class="w-5 h-5 text-accent-primary" />
+            <Icon :name="cat.icon" class="w-5 h-5 text-accent" />
             {{ cat.label }}
           </NuxtLink>
         </nav>
       </div>
-    </transition>
+    </Transition>
   </header>
 </template>
+
+<style scoped>
+.navbar {
+  @apply fixed top-0 left-0 right-0 z-50 h-16;
+  background: rgba(10, 11, 16, 0.8);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.logo-link {
+  @apply flex items-center gap-2.5 text-text-primary shrink-0;
+}
+
+.logo-icon {
+  @apply relative w-9 h-9 rounded-xl flex items-center justify-center;
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #ec4899 100%);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+  transition: all 0.3s ease;
+}
+
+.logo-link:hover .logo-icon {
+  box-shadow: 0 4px 24px rgba(124, 58, 237, 0.5);
+  transform: scale(1.05);
+}
+
+.nav-link {
+  @apply flex items-center gap-2 px-4 py-2 text-sm font-semibold text-text-secondary rounded-lg;
+  @apply transition-all duration-200;
+}
+
+.nav-link:hover {
+  @apply text-text-primary;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-link-active {
+  @apply text-accent-light;
+  background: rgba(124, 58, 237, 0.15);
+}
+
+.dropdown-menu {
+  @apply absolute top-full left-0 mt-2 w-56 rounded-xl overflow-hidden;
+  background: rgba(26, 27, 40, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-item {
+  @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-text-secondary rounded-lg;
+  @apply transition-all duration-200;
+}
+
+.dropdown-item:hover {
+  @apply text-text-primary;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.action-btn {
+  @apply p-2.5 text-text-secondary rounded-lg;
+  @apply transition-all duration-200;
+}
+
+.action-btn:hover {
+  @apply text-text-primary;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mobile-panel {
+  @apply absolute top-16 left-0 right-0;
+  background: rgba(10, 11, 16, 0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mobile-nav-link {
+  @apply flex items-center gap-3 px-4 py-3 text-sm font-semibold text-text-secondary rounded-lg;
+  @apply transition-all duration-200;
+}
+
+.mobile-nav-link:hover {
+  @apply text-text-primary;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mobile-nav-link-active {
+  @apply text-accent-light;
+  background: rgba(124, 58, 237, 0.15);
+}
+</style>
