@@ -3,7 +3,7 @@
  * Supports multiple legal game sources with priority and fallback
  */
 
-export type ProviderType = 'gamepix' | 'itchio' | 'opensource' | 'custom'
+export type ProviderType = 'gamepix' | 'gamemonetize' | 'itchio' | 'opensource' | 'custom'
 
 export interface ProviderConfig {
   id: ProviderType
@@ -138,4 +138,17 @@ export interface OpenSourceGame {
   category: string
   tags: string[]
   year?: number
+}
+
+export interface GameMonetizeGame {
+  id: string
+  title: string
+  description: string
+  instructions: string
+  url: string
+  category: string
+  tags: string
+  thumb: string
+  width: string
+  height: string
 }

@@ -5,6 +5,7 @@
 
 import type { ProviderConfig, ProviderType, UnifiedGame, ProviderResponse } from '~/types/provider'
 import { fetchGamePixGames, normalizeGamePixGame } from '../gamepix'
+import { fetchGameMonetizeGames, normalizeGameMonetizeGame } from '../gamemonetize'
 
 // Provider configurations
 export const PROVIDERS: Record<ProviderType, ProviderConfig> = {
@@ -23,11 +24,26 @@ export const PROVIDERS: Record<ProviderType, ProviderConfig> = {
       cacheTtlSeconds: 1800, // 30 minutes
     },
   },
+  gamemonetize: {
+    id: 'gamemonetize',
+    name: 'GameMonetize',
+    enabled: true,
+    priority: 2,
+    apiEndpoint: 'https://rss.gamemonetize.com/rssfeed.php',
+    attribution: {
+      name: 'GameMonetize',
+      url: 'https://gamemonetize.com',
+    },
+    rateLimit: {
+      requestsPerMinute: 10,
+      cacheTtlSeconds: 1800, // 30 minutes
+    },
+  },
   itchio: {
     id: 'itchio',
     name: 'itch.io',
-    enabled: true,
-    priority: 2,
+    enabled: false,
+    priority: 10,
     apiEndpoint: 'https://itch.io/api/1',
     attribution: {
       name: 'itch.io',
@@ -89,6 +105,9 @@ export async function getProviderGames(provider: ProviderType): Promise<Provider
     switch (provider) {
       case 'gamepix':
         games = await fetchGamePixProviderGames()
+        break
+      case 'gamemonetize':
+        games = await fetchGameMonetizeProviderGames()
         break
       case 'itchio':
         games = await fetchItchioProviderGames()
@@ -173,6 +192,30 @@ async function fetchGamePixProviderGames(): Promise<UnifiedGame[]> {
       attribution: {
         provider: 'GamePix',
         providerUrl: 'https://www.gamepix.com',
+        license: 'Publisher Embed License',
+      },
+    }
+  })
+}
+
+async function fetchGameMonetizeProviderGames(): Promise<UnifiedGame[]> {
+  const rawGames = await fetchGameMonetizeGames({ amount: 500 })
+  return rawGames.map((g, index) => {
+    const normalized = normalizeGameMonetizeGame(g, index)
+    return {
+      ...normalized,
+      providerId: g.id,
+      popularity: Math.max(0, 100 - index),
+      embedType: 'iframe' as const,
+      embedConfig: {
+        width: normalized.width,
+        height: normalized.height,
+        allowFullscreen: true,
+        sandbox: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
+      },
+      attribution: {
+        provider: 'GameMonetize',
+        providerUrl: 'https://gamemonetize.com',
         license: 'Publisher Embed License',
       },
     }
