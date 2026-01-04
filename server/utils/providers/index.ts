@@ -218,27 +218,54 @@ async function fetchGamePixProviderGames(): Promise<UnifiedGame[]> {
 }
 
 async function fetchGameMonetizeProviderGames(): Promise<UnifiedGame[]> {
-  const rawGames = await fetchGameMonetizeGames({ amount: 500 })
-  return rawGames.map((g, index) => {
-    const normalized = normalizeGameMonetizeGame(g, index)
-    return {
-      ...normalized,
-      providerId: g.id,
-      popularity: Math.max(0, 100 - index),
-      embedType: 'iframe' as const,
-      embedConfig: {
-        width: normalized.width,
-        height: normalized.height,
-        allowFullscreen: true,
-        sandbox: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
-      },
-      attribution: {
-        provider: 'GameMonetize',
-        providerUrl: 'https://gamemonetize.com',
-        license: 'Publisher Embed License',
-      },
+  // Fetch from multiple categories to ensure variety
+  const categories = [
+    { category: 'All', amount: 300 },
+    { category: 'Shooting', amount: 100 },
+    { category: 'Multiplayer', amount: 100 },
+    { category: 'Action', amount: 100 },
+    { category: '.IO', amount: 50 },
+  ]
+
+  const allGames: UnifiedGame[] = []
+  const seenIds = new Set<string>()
+
+  for (const { category, amount } of categories) {
+    try {
+      const rawGames = await fetchGameMonetizeGames({ category, amount })
+
+      for (let i = 0; i < rawGames.length; i++) {
+        const g = rawGames[i]
+        // Skip duplicates
+        if (seenIds.has(g.id)) continue
+        seenIds.add(g.id)
+
+        const normalized = normalizeGameMonetizeGame(g, allGames.length)
+        allGames.push({
+          ...normalized,
+          providerId: g.id,
+          popularity: Math.max(0, 100 - allGames.length),
+          embedType: 'iframe' as const,
+          embedConfig: {
+            width: normalized.width,
+            height: normalized.height,
+            allowFullscreen: true,
+            sandbox: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
+          },
+          attribution: {
+            provider: 'GameMonetize',
+            providerUrl: 'https://gamemonetize.com',
+            license: 'Publisher Embed License',
+          },
+        })
+      }
+    } catch (error) {
+      console.error(`Failed to fetch GameMonetize ${category}:`, error)
     }
-  })
+  }
+
+  console.log(`[GameMonetize] Fetched ${allGames.length} games from multiple categories`)
+  return allGames
 }
 
 async function fetchHTMLGamesProviderGames(): Promise<UnifiedGame[]> {
@@ -471,6 +498,166 @@ function getOpenSourceGames(): UnifiedGame[] {
         providerUrl: 'https://js13kgames.com',
         developerName: 'Dominic Szablewski',
         developerUrl: 'https://phoboslab.org',
+        license: 'MIT',
+      },
+    },
+    {
+      id: 'oss-space-huggers',
+      slug: 'space-huggers',
+      provider: 'opensource',
+      providerId: 'space-huggers',
+      title: 'Space Huggers',
+      description: 'A run-and-gun platformer where you fight aliens with various weapons!',
+      thumbnail: 'https://js13kgames.com/games/space-huggers/cover.png',
+      category: 'Shooter',
+      categories: ['Shooter', 'Action', 'Platformer'],
+      tags: ['shooter', 'platformer', 'action', 'aliens', 'weapons'],
+      plays: 450000,
+      rating: 4.3,
+      popularity: 75,
+      isNew: false,
+      isHot: true,
+      isFeatured: true,
+      isActive: true,
+      embedUrl: 'https://nickslevine.github.io/space-huggers/',
+      embedType: 'iframe',
+      embedConfig: { width: 800, height: 450, allowFullscreen: true },
+      orientation: 'landscape',
+      responsive: false,
+      touchEnabled: false,
+      mobileSupported: false,
+      attribution: {
+        provider: 'js13kGames',
+        providerUrl: 'https://js13kgames.com',
+        developerName: 'Nick Levine',
+        license: 'MIT',
+      },
+    },
+    {
+      id: 'oss-tank-royale',
+      slug: 'tank-royale',
+      provider: 'opensource',
+      providerId: 'tank-royale',
+      title: 'Tank Royale',
+      description: 'Battle other tanks in this multiplayer arena shooter!',
+      thumbnail: 'https://robocode-dev.github.io/tank-royale/img/tankRoyale.png',
+      category: 'Shooter',
+      categories: ['Shooter', 'Multiplayer', 'Action'],
+      tags: ['tank', 'shooter', 'multiplayer', 'battle', 'arena'],
+      plays: 350000,
+      rating: 4.2,
+      popularity: 70,
+      isNew: false,
+      isHot: true,
+      isFeatured: false,
+      isActive: true,
+      embedUrl: 'https://nickslevine.github.io/tank-royale/',
+      embedType: 'iframe',
+      embedConfig: { width: 800, height: 600, allowFullscreen: true },
+      orientation: 'landscape',
+      responsive: false,
+      touchEnabled: false,
+      mobileSupported: false,
+      attribution: {
+        provider: 'Open Source',
+        providerUrl: 'https://github.com',
+        developerName: 'Various Contributors',
+        license: 'MIT',
+      },
+    },
+    {
+      id: 'oss-asteroid-shooter',
+      slug: 'asteroid-shooter',
+      provider: 'opensource',
+      providerId: 'asteroid-shooter',
+      title: 'Asteroid Shooter',
+      description: 'Classic asteroid shooter game. Destroy asteroids and survive in space!',
+      thumbnail: 'https://cdn.jsdelivr.net/gh/nickslevine/asteroid@main/preview.png',
+      category: 'Shooter',
+      categories: ['Shooter', 'Arcade', 'Space'],
+      tags: ['asteroid', 'shooter', 'space', 'arcade', 'classic'],
+      plays: 280000,
+      rating: 4.0,
+      popularity: 68,
+      isNew: false,
+      isHot: false,
+      isFeatured: false,
+      isActive: true,
+      embedUrl: 'https://www.kevs3d.co.uk/dev/asteroids/',
+      embedType: 'iframe',
+      embedConfig: { width: 640, height: 480, allowFullscreen: true },
+      orientation: 'landscape',
+      responsive: false,
+      touchEnabled: false,
+      mobileSupported: false,
+      attribution: {
+        provider: 'Open Source',
+        providerUrl: 'https://github.com',
+        developerName: 'Kevin Roast',
+        license: 'MIT',
+      },
+    },
+    {
+      id: 'oss-xibalba',
+      slug: 'xibalba',
+      provider: 'opensource',
+      providerId: 'xibalba',
+      title: 'Xibalba',
+      description: 'A first-person dungeon crawler shooter. Explore and eliminate enemies!',
+      thumbnail: 'https://js13kgames.com/games/xibalba/cover.png',
+      category: 'Shooter',
+      categories: ['Shooter', 'Action', 'FPS'],
+      tags: ['fps', 'shooter', 'dungeon', 'action', 'retro'],
+      plays: 520000,
+      rating: 4.5,
+      popularity: 82,
+      isNew: false,
+      isHot: true,
+      isFeatured: true,
+      isActive: true,
+      embedUrl: 'https://nickslevine.github.io/xibalba/',
+      embedType: 'iframe',
+      embedConfig: { width: 800, height: 600, allowFullscreen: true },
+      orientation: 'landscape',
+      responsive: false,
+      touchEnabled: false,
+      mobileSupported: false,
+      attribution: {
+        provider: 'js13kGames',
+        providerUrl: 'https://js13kgames.com',
+        developerName: 'Various',
+        license: 'MIT',
+      },
+    },
+    {
+      id: 'oss-spaceshooter',
+      slug: 'space-shooter-pro',
+      provider: 'opensource',
+      providerId: 'spaceshooter',
+      title: 'Space Shooter Pro',
+      description: 'Intense space shooter with power-ups and boss battles!',
+      thumbnail: 'https://play.js13kgames.com/spaceshooter/icon.png',
+      category: 'Shooter',
+      categories: ['Shooter', 'Arcade', 'Space'],
+      tags: ['space', 'shooter', 'arcade', 'powerups', 'boss'],
+      plays: 380000,
+      rating: 4.1,
+      popularity: 72,
+      isNew: false,
+      isHot: false,
+      isFeatured: false,
+      isActive: true,
+      embedUrl: 'https://nickslevine.github.io/space-shooter/',
+      embedType: 'iframe',
+      embedConfig: { width: 640, height: 480, allowFullscreen: true },
+      orientation: 'landscape',
+      responsive: false,
+      touchEnabled: true,
+      mobileSupported: true,
+      attribution: {
+        provider: 'Open Source',
+        providerUrl: 'https://github.com',
+        developerName: 'Various',
         license: 'MIT',
       },
     },
