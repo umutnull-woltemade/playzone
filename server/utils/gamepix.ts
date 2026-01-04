@@ -30,7 +30,7 @@ export async function fetchGamePixGames(options: {
   limit?: number
   page?: number
 } = {}): Promise<GamePixGame[]> {
-  const { order = 'q', category, limit = 100, page = 1 } = options
+  const { order = 'q', category, limit = 500, page = 1 } = options
 
   // Build the API URL with required SID parameter
   const params = new URLSearchParams({
