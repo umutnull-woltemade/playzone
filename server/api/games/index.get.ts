@@ -48,24 +48,15 @@ export default defineEventHandler(async (event) => {
   const featured = query.featured === 'true'
   const hot = query.hot === 'true'
 
-  // Check cache
+  // Check cache - always fetch all providers for the main cache
   const now = Date.now()
   if (cachedGames.length === 0 || now - cacheTimestamp > CACHE_TTL) {
     console.log('[Catalog] Fetching games from all providers...')
 
     try {
-      let unifiedGames: UnifiedGame[] = []
-
-      if (provider && PROVIDERS[provider]) {
-        // Fetch from specific provider
-        const response = await getProviderGames(provider)
-        unifiedGames = response.games
-        console.log(`[Catalog] Fetched ${unifiedGames.length} games from ${provider}`)
-      } else {
-        // Fetch from all enabled providers
-        unifiedGames = await getAllProviderGames()
-        console.log(`[Catalog] Fetched ${unifiedGames.length} games from all providers`)
-      }
+      // Always fetch from all enabled providers for the cache
+      const unifiedGames = await getAllProviderGames()
+      console.log(`[Catalog] Fetched ${unifiedGames.length} games from all providers`)
 
       // Convert to Game type for backward compatibility
       cachedGames = unifiedGames.map(unifiedToGame)
@@ -85,9 +76,16 @@ export default defineEventHandler(async (event) => {
 
   if (category) {
     const categoryLower = category.toLowerCase()
+    // Handle category aliases (shooter/shooting)
+    const categoryAliases: Record<string, string[]> = {
+      shooter: ['shooter', 'shooting'],
+      shooting: ['shooter', 'shooting'],
+    }
+    const matchCategories = categoryAliases[categoryLower] || [categoryLower]
+
     filteredGames = filteredGames.filter(game =>
-      game.category.toLowerCase() === categoryLower ||
-      game.categories.some(c => c.toLowerCase() === categoryLower)
+      matchCategories.includes(game.category.toLowerCase()) ||
+      game.categories.some(c => matchCategories.includes(c.toLowerCase()))
     )
   }
 
@@ -129,10 +127,28 @@ export default defineEventHandler(async (event) => {
         return priorityA - priorityB
       })
       break
+    case 'mixed':
+    default:
+      // Mixed sort: prioritize featured/hot, then mix providers
+      filteredGames.sort((a, b) => {
+        // Featured and hot games first
+        const aScore = (a.isFeatured ? 1000 : 0) + (a.isHot ? 500 : 0)
+        const bScore = (b.isFeatured ? 1000 : 0) + (b.isHot ? 500 : 0)
+        if (aScore !== bScore) return bScore - aScore
+
+        // Then by provider priority
+        const priorityA = PROVIDERS[a.provider as ProviderType]?.priority || 99
+        const priorityB = PROVIDERS[b.provider as ProviderType]?.priority || 99
+        if (priorityA !== priorityB) return priorityA - priorityB
+
+        // Then by rating
+        return b.rating - a.rating
+      })
+      break
   }
 
   // Paginate
-  const perPage = Math.min(limit, 100)
+  const perPage = Math.min(limit, 500) // Increased from 100 to 500
   const startIndex = (page - 1) * perPage
   const paginatedGames = filteredGames.slice(startIndex, startIndex + perPage)
 

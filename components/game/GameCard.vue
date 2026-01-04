@@ -43,7 +43,7 @@ function formatPlays(plays: number): string {
     @mouseleave="isHovering = false"
   >
     <!-- Thumbnail -->
-    <div class="absolute inset-0 overflow-hidden rounded-xl">
+    <div class="absolute inset-0 overflow-hidden rounded-2xl">
       <img
         :src="game.thumbnail"
         :alt="game.title"
@@ -56,7 +56,7 @@ function formatPlays(plays: number): string {
 
       <!-- Hover Glow Effect -->
       <div class="hover-glow">
-        <div class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-accent via-pink to-cyan" />
+        <div class="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-brand via-pink to-cyan rounded-b-2xl" />
       </div>
     </div>
 
@@ -64,32 +64,36 @@ function formatPlays(plays: number): string {
     <div class="shimmer-effect" />
 
     <!-- Badges (Top Left) -->
-    <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 z-10">
+    <div class="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
       <span v-if="game.isHot" class="badge badge-hot">
+        <Icon name="ph:fire-fill" class="w-3 h-3" />
         Hot
       </span>
       <span v-if="game.isNew" class="badge badge-new">
+        <Icon name="ph:sparkle-fill" class="w-3 h-3" />
         New
       </span>
       <span v-if="game.isFeatured && !game.isHot && !game.isNew" class="badge badge-featured">
+        <Icon name="ph:star-fill" class="w-3 h-3" />
         Featured
       </span>
     </div>
 
     <!-- Play Count (Top Right) -->
-    <div class="absolute top-2.5 right-2.5 z-10">
+    <div class="absolute top-3 right-3 z-10">
       <div class="stat-badge">
-        <Icon name="ph:play-circle-fill" class="w-3.5 h-3.5 text-accent-light" />
+        <Icon name="ph:play-circle-fill" class="w-3.5 h-3.5 text-brand-light" />
         {{ formatPlays(game.plays) }}
       </div>
     </div>
 
     <!-- Content (Bottom) -->
-    <div class="absolute bottom-0 left-0 right-0 p-3 z-10">
+    <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
       <h3 class="text-sm font-bold text-text-primary leading-tight line-clamp-1 group-hover:text-white transition-colors duration-200">
         {{ game.title }}
       </h3>
-      <p class="text-[11px] text-text-muted mt-0.5 line-clamp-1">
+      <p class="text-[11px] text-text-muted mt-1 line-clamp-1 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-light"></span>
         {{ game.category }}
       </p>
     </div>
@@ -98,7 +102,7 @@ function formatPlays(plays: number): string {
     <div class="play-button-wrapper">
       <div class="play-button">
         <Icon name="ph:play-fill" class="w-5 h-5" />
-        <span>Play</span>
+        <span>Play Now</span>
       </div>
     </div>
 
@@ -109,35 +113,36 @@ function formatPlays(plays: number): string {
 
 <style scoped>
 .game-card {
-  @apply relative flex flex-col rounded-xl overflow-hidden cursor-pointer;
-  background: linear-gradient(135deg, rgba(26, 27, 40, 0.9) 0%, rgba(18, 19, 28, 0.95) 100%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  @apply relative flex flex-col rounded-2xl overflow-hidden cursor-pointer;
+  background: linear-gradient(135deg, rgba(22, 15, 42, 0.9) 0%, rgba(15, 10, 31, 0.95) 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .game-card:hover {
-  transform: translateY(-6px) scale(1.02);
+  transform: translateY(-8px) scale(1.02);
   box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(124, 58, 237, 0.3);
+    0 24px 48px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(139, 92, 246, 0.3),
+    0 0 40px rgba(139, 92, 246, 0.15);
 }
 
 .card-overlay {
   @apply absolute inset-0 transition-opacity duration-500;
   background: linear-gradient(
     to top,
-    rgba(10, 11, 16, 0.95) 0%,
-    rgba(10, 11, 16, 0.4) 40%,
-    rgba(10, 11, 16, 0.1) 100%
+    rgba(15, 10, 31, 0.95) 0%,
+    rgba(15, 10, 31, 0.4) 40%,
+    rgba(15, 10, 31, 0.1) 100%
   );
 }
 
 .game-card:hover .card-overlay {
   background: linear-gradient(
     to top,
-    rgba(10, 11, 16, 0.98) 0%,
-    rgba(10, 11, 16, 0.6) 50%,
-    rgba(10, 11, 16, 0.3) 100%
+    rgba(15, 10, 31, 0.98) 0%,
+    rgba(15, 10, 31, 0.6) 50%,
+    rgba(15, 10, 31, 0.3) 100%
   );
 }
 
@@ -154,7 +159,7 @@ function formatPlays(plays: number): string {
   background: linear-gradient(
     105deg,
     transparent 40%,
-    rgba(255, 255, 255, 0.03) 50%,
+    rgba(139, 92, 246, 0.05) 50%,
     transparent 60%
   );
   transform: translateX(-100%);
@@ -176,33 +181,33 @@ function formatPlays(plays: number): string {
 }
 
 .badge {
-  @apply px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-lg;
-  backdrop-filter: blur(4px);
+  @apply flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-lg;
+  backdrop-filter: blur(8px);
 }
 
 .badge-hot {
   background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
   @apply text-white;
-  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
 }
 
 .badge-new {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   @apply text-white;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .badge-featured {
-  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
   @apply text-white;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
 }
 
 .stat-badge {
-  @apply flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-text-secondary;
-  background: rgba(10, 11, 16, 0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  @apply flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium text-text-secondary;
+  background: rgba(15, 10, 31, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.1);
 }
 
 .play-button-wrapper {
@@ -215,11 +220,11 @@ function formatPlays(plays: number): string {
 }
 
 .play-button {
-  @apply flex items-center gap-2 px-5 py-2.5 text-white font-bold rounded-full;
-  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #ec4899 100%);
+  @apply flex items-center gap-2 px-6 py-3 text-white font-bold rounded-xl;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c084fc 100%);
   background-size: 200% 200%;
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.5);
-  transform: scale(0.8);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+  transform: scale(0.85);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -229,16 +234,16 @@ function formatPlays(plays: number): string {
 
 .play-button:hover {
   background-position: 100% 100%;
-  box-shadow: 0 6px 24px rgba(124, 58, 237, 0.6);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.6);
 }
 
 .card-border {
-  @apply absolute inset-0 rounded-xl pointer-events-none;
+  @apply absolute inset-0 rounded-2xl pointer-events-none;
   border: 2px solid transparent;
   transition: border-color 0.3s ease;
 }
 
 .game-card:hover .card-border {
-  border-color: rgba(124, 58, 237, 0.4);
+  border-color: rgba(139, 92, 246, 0.4);
 }
 </style>

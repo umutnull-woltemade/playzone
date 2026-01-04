@@ -3,9 +3,15 @@ const footerLinks = {
   games: [
     { label: 'Action', path: '/category/action' },
     { label: 'Puzzle', path: '/category/puzzle' },
+    { label: 'Shooter', path: '/category/shooter' },
     { label: 'Racing', path: '/category/racing' },
     { label: 'Sports', path: '/category/sports' },
-    { label: 'Strategy', path: '/category/strategy' },
+  ],
+  explore: [
+    { label: 'New Games', path: '/category/new' },
+    { label: 'Popular', path: '/category/popular' },
+    { label: 'All Games', path: '/category/all' },
+    { label: 'Favorites', path: '/favorites' },
   ],
   company: [
     { label: 'Developers', path: '/developers' },
@@ -20,30 +26,48 @@ const footerLinks = {
 </script>
 
 <template>
-  <footer class="bg-bg-surface border-t border-bg-subtle mt-16">
-    <div class="max-w-screen-2xl mx-auto px-4 md:px-6 py-12">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+  <footer class="footer-wrapper">
+    <div class="max-w-screen-2xl mx-auto px-4 md:px-6 py-16">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12">
         <!-- Brand -->
         <div class="col-span-2 md:col-span-1">
-          <NuxtLink to="/" class="flex items-center gap-2 text-text-primary mb-4">
-            <div class="w-8 h-8 bg-accent-primary rounded-lg flex items-center justify-center">
-              <Icon name="ph:game-controller-fill" class="w-5 h-5 text-bg-void" />
+          <NuxtLink to="/" class="flex items-center gap-3 text-text-primary mb-5">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center logo-icon">
+              <Icon name="ph:planet-fill" class="w-5 h-5 text-white" />
             </div>
-            <span class="text-lg font-bold tracking-wide font-display">PLAYZONE</span>
+            <div class="flex flex-col leading-none">
+              <span class="text-base font-bold gradient-text-brand">ANDROMEDA</span>
+              <span class="text-[10px] font-medium text-text-muted uppercase tracking-widest">GAMES</span>
+            </div>
           </NuxtLink>
-          <p class="text-sm text-text-secondary">
-            Play free online games instantly. No downloads, no signup required.
+          <p class="text-sm text-text-secondary leading-relaxed">
+            Play free online games instantly. No downloads, no signup required. Your galaxy of games awaits.
           </p>
         </div>
 
         <!-- Games -->
         <div>
-          <h4 class="text-sm font-semibold text-text-primary mb-4">Games</h4>
-          <ul class="space-y-2">
+          <h4 class="text-sm font-bold text-text-primary mb-4 uppercase tracking-wider">Categories</h4>
+          <ul class="space-y-3">
             <li v-for="link in footerLinks.games" :key="link.path">
               <NuxtLink
                 :to="link.path"
-                class="text-sm text-text-secondary hover:text-accent-primary transition-colors"
+                class="text-sm text-text-secondary hover:text-brand-light transition-colors"
+              >
+                {{ link.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Explore -->
+        <div>
+          <h4 class="text-sm font-bold text-text-primary mb-4 uppercase tracking-wider">Explore</h4>
+          <ul class="space-y-3">
+            <li v-for="link in footerLinks.explore" :key="link.path">
+              <NuxtLink
+                :to="link.path"
+                class="text-sm text-text-secondary hover:text-brand-light transition-colors"
               >
                 {{ link.label }}
               </NuxtLink>
@@ -53,12 +77,12 @@ const footerLinks = {
 
         <!-- Company -->
         <div>
-          <h4 class="text-sm font-semibold text-text-primary mb-4">Company</h4>
-          <ul class="space-y-2">
+          <h4 class="text-sm font-bold text-text-primary mb-4 uppercase tracking-wider">Company</h4>
+          <ul class="space-y-3">
             <li v-for="link in footerLinks.company" :key="link.path">
               <NuxtLink
                 :to="link.path"
-                class="text-sm text-text-secondary hover:text-accent-primary transition-colors"
+                class="text-sm text-text-secondary hover:text-brand-light transition-colors"
               >
                 {{ link.label }}
               </NuxtLink>
@@ -68,12 +92,12 @@ const footerLinks = {
 
         <!-- Legal -->
         <div>
-          <h4 class="text-sm font-semibold text-text-primary mb-4">Legal</h4>
-          <ul class="space-y-2">
+          <h4 class="text-sm font-bold text-text-primary mb-4 uppercase tracking-wider">Legal</h4>
+          <ul class="space-y-3">
             <li v-for="link in footerLinks.legal" :key="link.path">
               <NuxtLink
                 :to="link.path"
-                class="text-sm text-text-secondary hover:text-accent-primary transition-colors"
+                class="text-sm text-text-secondary hover:text-brand-light transition-colors"
               >
                 {{ link.label }}
               </NuxtLink>
@@ -83,18 +107,18 @@ const footerLinks = {
       </div>
 
       <!-- Bottom -->
-      <div class="mt-12 pt-8 border-t border-bg-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="mt-16 pt-8 border-t border-brand-muted/30 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-sm text-text-muted">
-          &copy; {{ new Date().getFullYear() }} PlayZone. All rights reserved.
+          &copy; {{ new Date().getFullYear() }} Andromeda Games. All rights reserved.
         </p>
         <div class="flex items-center gap-4">
-          <a href="#" class="text-text-muted hover:text-accent-primary transition-colors">
+          <a href="#" class="social-link" aria-label="Twitter">
             <Icon name="ph:twitter-logo" class="w-5 h-5" />
           </a>
-          <a href="#" class="text-text-muted hover:text-accent-primary transition-colors">
+          <a href="#" class="social-link" aria-label="Discord">
             <Icon name="ph:discord-logo" class="w-5 h-5" />
           </a>
-          <a href="#" class="text-text-muted hover:text-accent-primary transition-colors">
+          <a href="#" class="social-link" aria-label="YouTube">
             <Icon name="ph:youtube-logo" class="w-5 h-5" />
           </a>
         </div>
@@ -102,3 +126,34 @@ const footerLinks = {
     </div>
   </footer>
 </template>
+
+<style scoped>
+.footer-wrapper {
+  background: linear-gradient(to bottom, rgba(22, 15, 42, 0.5) 0%, rgba(15, 10, 31, 1) 100%);
+  border-top: 1px solid rgba(139, 92, 246, 0.1);
+  margin-top: 4rem;
+}
+
+.logo-icon {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c084fc 100%);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+}
+
+.gradient-text-brand {
+  background: linear-gradient(135deg, #c084fc 0%, #a78bfa 50%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.social-link {
+  @apply p-2.5 text-text-muted rounded-xl transition-all duration-200;
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.social-link:hover {
+  @apply text-brand-light;
+  background: rgba(139, 92, 246, 0.15);
+  transform: translateY(-2px);
+}
+</style>

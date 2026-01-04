@@ -12,22 +12,29 @@ const specialCategories: Record<string, { title: string; icon: string }> = {
   new: { title: 'New Releases', icon: 'ph:sparkle-fill' },
 }
 
+// Normalize category slug (handle shooter/shooting variants)
+const normalizedCategory = computed(() => {
+  const s = slug.value.toLowerCase()
+  if (s === 'shooter' || s === 'shooting') return 'shooter'
+  return s
+})
+
 // Determine API query based on slug
 const apiQuery = computed(() => {
-  const base = { limit: 50 }
+  const base = { limit: 100 }
 
   if (slug.value === 'all' || slug.value === 'popular') {
     return { ...base, sort: 'popular' }
   }
   if (slug.value === 'trending') {
-    return { ...base, sort: 'popular' } // Hot games sorted by popularity
+    return { ...base, sort: 'popular' }
   }
   if (slug.value === 'new') {
     return { ...base, sort: 'newest' }
   }
 
-  // Regular category
-  return { ...base, category: slug.value }
+  // Regular category - use normalized value
+  return { ...base, category: normalizedCategory.value }
 })
 
 // Fetch games from API
@@ -59,6 +66,7 @@ const pageIcon = computed(() => {
     sports: 'ph:soccer-ball-fill',
     strategy: 'ph:chess-fill',
     adventure: 'ph:compass-fill',
+    shooter: 'ph:crosshair-fill',
     shooting: 'ph:crosshair-fill',
     arcade: 'ph:game-controller-fill',
     io: 'ph:globe-fill',
@@ -68,7 +76,7 @@ const pageIcon = computed(() => {
 })
 
 useSeoMeta({
-  title: () => `${pageTitle.value} - Free Online Games | PlayZone`,
+  title: () => `${pageTitle.value} - Free Online Games | Andromeda Games`,
   description: () => `Play free ${pageTitle.value.toLowerCase()} online. No downloads required.`,
 })
 
@@ -118,12 +126,12 @@ const sortedGames = computed(() => {
 
     <!-- Error State -->
     <div v-else-if="error" class="text-center py-16">
-      <Icon name="ph:warning-circle" class="w-16 h-16 text-error mx-auto mb-4" />
+      <Icon name="ph:warning-circle" class="w-16 h-16 text-red-400 mx-auto mb-4" />
       <h2 class="text-xl font-semibold text-text-primary mb-2">Failed to load games</h2>
       <p class="text-text-secondary mb-6">Please try again later.</p>
       <NuxtLink
         to="/"
-        class="inline-flex items-center gap-2 px-5 py-3 bg-accent-primary text-bg-void font-semibold rounded-md hover:bg-accent-hover transition-colors"
+        class="inline-flex items-center gap-2 px-5 py-3 bg-brand text-white font-semibold rounded-xl hover:bg-brand-dark transition-colors shadow-lg shadow-brand/30"
       >
         <Icon name="ph:house" class="w-5 h-5" />
         Back to Home
@@ -135,7 +143,9 @@ const sortedGames = computed(() => {
       <!-- Page Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
-          <Icon :name="pageIcon" class="w-8 h-8 text-accent-primary" />
+          <div class="p-2 bg-brand/20 rounded-xl">
+            <Icon :name="pageIcon" class="w-7 h-7 text-brand-light" />
+          </div>
           <div>
             <h1 class="text-2xl font-bold text-text-primary font-display">{{ pageTitle }}</h1>
             <p class="text-sm text-text-muted">{{ games.length }} games</p>
@@ -148,7 +158,7 @@ const sortedGames = computed(() => {
           <select
             id="sort"
             v-model="selectedSort"
-            class="px-3 py-2 bg-bg-surface border border-bg-subtle rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent-primary/50"
+            class="px-3 py-2 bg-bg-surface border border-brand/20 rounded-xl text-sm text-text-primary focus:outline-none focus:border-brand/50 transition-colors"
           >
             <option v-for="option in sortOptions" :key="option.value" :value="option.value">
               {{ option.label }}
@@ -169,7 +179,7 @@ const sortedGames = computed(() => {
         <p class="text-text-secondary mb-6">Check back later for new games in this category.</p>
         <NuxtLink
           to="/"
-          class="inline-flex items-center gap-2 px-5 py-3 bg-accent-primary text-bg-void font-semibold rounded-md hover:bg-accent-hover transition-colors"
+          class="inline-flex items-center gap-2 px-5 py-3 bg-brand text-white font-semibold rounded-xl hover:bg-brand-dark transition-colors shadow-lg shadow-brand/30"
         >
           <Icon name="ph:house" class="w-5 h-5" />
           Back to Home

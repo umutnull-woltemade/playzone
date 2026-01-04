@@ -15,8 +15,8 @@ export default defineNuxtConfig({
   ],
 
   site: {
-    url: 'https://playzone-eul.pages.dev',
-    name: 'PlayZone - Free Online Games',
+    url: 'https://andromedagames.com',
+    name: 'Andromeda Games - Free Online Games',
   },
 
   sitemap: {
@@ -35,16 +35,16 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'PlayZone - Free Online Games',
+      title: 'Andromeda Games - Free Online Games',
       meta: [
-        { name: 'description', content: 'Play free online games instantly. No downloads, no signup required.' },
+        { name: 'description', content: 'Play free online games instantly. No downloads, no signup required. The best gaming experience awaits!' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'theme-color', content: '#0a0b10' },
+        { name: 'theme-color', content: '#0f0a1f' },
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap' },
       ],
     },
     pageTransition: {

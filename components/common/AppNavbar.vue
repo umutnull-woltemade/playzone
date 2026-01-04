@@ -5,21 +5,30 @@ const isMobileMenuOpen = ref(false)
 const navItems = [
   { label: 'Home', path: '/', icon: 'ph:house-fill' },
   { label: 'New', path: '/category/new', icon: 'ph:sparkle-fill' },
-  { label: 'Popular', path: '/category/popular', icon: 'ph:trophy-fill' },
-  { label: 'Updated', path: '/category/trending', icon: 'ph:clock-fill' },
+  { label: 'Popular', path: '/category/popular', icon: 'ph:fire-fill' },
+  { label: 'Favorites', path: '/favorites', icon: 'ph:heart-fill' },
 ]
 
 const moreCategories = [
   { label: 'Action', path: '/category/action', icon: 'ph:lightning-fill' },
+  { label: 'Shooter', path: '/category/shooter', icon: 'ph:crosshair-fill' },
   { label: 'Puzzle', path: '/category/puzzle', icon: 'ph:puzzle-piece-fill' },
   { label: 'Racing', path: '/category/racing', icon: 'ph:car-fill' },
   { label: 'Sports', path: '/category/sports', icon: 'ph:soccer-ball-fill' },
   { label: 'Adventure', path: '/category/adventure', icon: 'ph:compass-fill' },
   { label: 'Arcade', path: '/category/arcade', icon: 'ph:game-controller-fill' },
   { label: 'Multiplayer', path: '/category/multiplayer', icon: 'ph:users-fill' },
+  { label: 'Strategy', path: '/category/strategy', icon: 'ph:chess-fill' },
 ]
 
 const showCategories = ref(false)
+
+// Close dropdown when clicking outside
+const closeDropdown = () => {
+  setTimeout(() => {
+    showCategories.value = false
+  }, 150)
+}
 </script>
 
 <template>
@@ -28,15 +37,16 @@ const showCategories = ref(false)
       <!-- Logo -->
       <NuxtLink to="/" class="logo-link group">
         <div class="logo-icon">
-          <Icon name="ph:game-controller-fill" class="w-5 h-5 text-white" />
+          <Icon name="ph:planet-fill" class="w-5 h-5 text-white" />
         </div>
-        <span class="text-lg font-extrabold tracking-wide hidden sm:block">
-          <span class="text-text-primary">PLAY</span><span class="gradient-text">ZONE</span>
-        </span>
+        <div class="hidden sm:flex flex-col leading-none">
+          <span class="text-base font-bold tracking-tight gradient-text-brand">ANDROMEDA</span>
+          <span class="text-[10px] font-medium text-text-muted uppercase tracking-widest">GAMES</span>
+        </div>
       </NuxtLink>
 
       <!-- Navigation (Desktop) -->
-      <nav class="hidden lg:flex items-center gap-1 ml-4">
+      <nav class="hidden lg:flex items-center gap-1 ml-6">
         <NuxtLink
           v-for="item in navItems"
           :key="item.path"
@@ -53,11 +63,11 @@ const showCategories = ref(false)
           <button
             class="nav-link"
             @click="showCategories = !showCategories"
-            @blur="setTimeout(() => showCategories = false, 150)"
+            @blur="closeDropdown"
           >
             <Icon name="ph:squares-four-fill" class="w-4 h-4" />
             Categories
-            <Icon name="ph:caret-down" class="w-3 h-3 transition-transform" :class="{ 'rotate-180': showCategories }" />
+            <Icon name="ph:caret-down" class="w-3 h-3 transition-transform duration-200" :class="{ 'rotate-180': showCategories }" />
           </button>
 
           <!-- Dropdown Menu -->
@@ -70,7 +80,7 @@ const showCategories = ref(false)
             leave-to-class="opacity-0 scale-95 -translate-y-2"
           >
             <div v-if="showCategories" class="dropdown-menu">
-              <div class="p-2">
+              <div class="p-2 grid grid-cols-2 gap-1">
                 <NuxtLink
                   v-for="cat in moreCategories"
                   :key="cat.path"
@@ -78,7 +88,7 @@ const showCategories = ref(false)
                   class="dropdown-item"
                   @click="showCategories = false"
                 >
-                  <Icon :name="cat.icon" class="w-4 h-4 text-accent" />
+                  <Icon :name="cat.icon" class="w-4 h-4 text-brand-primary" />
                   {{ cat.label }}
                 </NuxtLink>
               </div>
@@ -169,7 +179,7 @@ const showCategories = ref(false)
             class="mobile-nav-link"
             @click="isMobileMenuOpen = false"
           >
-            <Icon :name="cat.icon" class="w-5 h-5 text-accent" />
+            <Icon :name="cat.icon" class="w-5 h-5 text-brand-primary" />
             {{ cat.label }}
           </NuxtLink>
         </nav>
@@ -181,89 +191,100 @@ const showCategories = ref(false)
 <style scoped>
 .navbar {
   @apply fixed top-0 left-0 right-0 z-50 h-16;
-  background: rgba(10, 11, 16, 0.8);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(15, 10, 31, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.1);
 }
 
 .logo-link {
-  @apply flex items-center gap-2.5 text-text-primary shrink-0;
+  @apply flex items-center gap-3 text-text-primary shrink-0;
 }
 
 .logo-icon {
-  @apply relative w-9 h-9 rounded-xl flex items-center justify-center;
-  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #ec4899 100%);
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+  @apply relative w-10 h-10 rounded-xl flex items-center justify-center;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c084fc 100%);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
   transition: all 0.3s ease;
 }
 
 .logo-link:hover .logo-icon {
-  box-shadow: 0 4px 24px rgba(124, 58, 237, 0.5);
-  transform: scale(1.05);
+  box-shadow: 0 6px 28px rgba(139, 92, 246, 0.6);
+  transform: scale(1.05) rotate(-5deg);
+}
+
+.gradient-text-brand {
+  background: linear-gradient(135deg, #c084fc 0%, #a78bfa 50%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .nav-link {
-  @apply flex items-center gap-2 px-4 py-2 text-sm font-semibold text-text-secondary rounded-lg;
+  @apply flex items-center gap-2 px-4 py-2 text-sm font-semibold text-text-secondary rounded-xl;
   @apply transition-all duration-200;
 }
 
 .nav-link:hover {
   @apply text-text-primary;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(139, 92, 246, 0.1);
 }
 
 .nav-link-active {
-  @apply text-accent-light;
-  background: rgba(124, 58, 237, 0.15);
+  color: #c084fc !important;
+  background: rgba(139, 92, 246, 0.15);
 }
 
 .dropdown-menu {
-  @apply absolute top-full left-0 mt-2 w-56 rounded-xl overflow-hidden;
-  background: rgba(26, 27, 40, 0.95);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  @apply absolute top-full left-0 mt-2 w-72 rounded-2xl overflow-hidden;
+  background: rgba(20, 15, 40, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.1);
 }
 
 .dropdown-item {
-  @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-text-secondary rounded-lg;
+  @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-text-secondary rounded-xl;
   @apply transition-all duration-200;
 }
 
 .dropdown-item:hover {
   @apply text-text-primary;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(139, 92, 246, 0.15);
 }
 
 .action-btn {
-  @apply p-2.5 text-text-secondary rounded-lg;
+  @apply p-2.5 text-text-secondary rounded-xl;
   @apply transition-all duration-200;
 }
 
 .action-btn:hover {
   @apply text-text-primary;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(139, 92, 246, 0.1);
 }
 
 .mobile-panel {
   @apply absolute top-16 left-0 right-0;
-  background: rgba(10, 11, 16, 0.95);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(15, 10, 31, 0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.1);
 }
 
 .mobile-nav-link {
-  @apply flex items-center gap-3 px-4 py-3 text-sm font-semibold text-text-secondary rounded-lg;
+  @apply flex items-center gap-3 px-4 py-3 text-sm font-semibold text-text-secondary rounded-xl;
   @apply transition-all duration-200;
 }
 
 .mobile-nav-link:hover {
   @apply text-text-primary;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(139, 92, 246, 0.1);
 }
 
 .mobile-nav-link-active {
-  @apply text-accent-light;
-  background: rgba(124, 58, 237, 0.15);
+  color: #c084fc !important;
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.text-brand-primary {
+  color: #a78bfa;
 }
 </style>

@@ -19,7 +19,7 @@ const isFavorite = computed(() => game.value ? favorites.value.includes(game.val
 
 // Load favorites from localStorage on mount
 onMounted(() => {
-  const stored = localStorage.getItem('playzone-favorites')
+  const stored = localStorage.getItem('andromeda-favorites')
   if (stored) {
     try {
       favorites.value = JSON.parse(stored)
@@ -40,7 +40,7 @@ function toggleFavorite() {
     favorites.value = [...favorites.value, gameSlug]
   }
 
-  localStorage.setItem('playzone-favorites', JSON.stringify(favorites.value))
+  localStorage.setItem('andromeda-favorites', JSON.stringify(favorites.value))
 }
 
 // Share game
@@ -48,7 +48,7 @@ async function shareGame() {
   if (!game.value) return
 
   const shareData = {
-    title: `${game.value.title} - PlayZone`,
+    title: `${game.value.title} - Andromeda Games`,
     text: game.value.description,
     url: window.location.href,
   }
@@ -84,10 +84,39 @@ function formatPlays(plays: number): string {
 
 function startPlaying() {
   isPlaying.value = true
+
+  // Save to recently played
+  if (game.value) {
+    saveToRecentlyPlayed(game.value.slug)
+  }
+}
+
+// Save game to recently played in localStorage
+function saveToRecentlyPlayed(slug: string) {
+  const MAX_RECENT = 20
+  let recent: string[] = []
+
+  try {
+    const stored = localStorage.getItem('andromeda-recent')
+    if (stored) {
+      recent = JSON.parse(stored)
+    }
+  } catch {
+    recent = []
+  }
+
+  // Remove if already exists and add to front
+  recent = recent.filter(s => s !== slug)
+  recent.unshift(slug)
+
+  // Keep only last MAX_RECENT
+  recent = recent.slice(0, MAX_RECENT)
+
+  localStorage.setItem('andromeda-recent', JSON.stringify(recent))
 }
 
 useSeoMeta({
-  title: () => game.value ? `${game.value.title} - Play Free Online | PlayZone` : 'Loading...',
+  title: () => game.value ? `${game.value.title} - Play Free Online | Andromeda Games` : 'Loading...',
   description: () => game.value?.description || '',
   ogImage: () => game.value?.thumbnail || '',
 })
@@ -128,7 +157,7 @@ useSeoMeta({
       <p class="text-text-secondary mb-6">The game you're looking for doesn't exist or has been removed.</p>
       <NuxtLink
         to="/"
-        class="inline-flex items-center gap-2 px-6 py-3 bg-accent-primary hover:bg-accent-hover text-white font-bold rounded-xl transition-all"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl transition-all shadow-lg shadow-brand/30"
       >
         <Icon name="ph:house" class="w-5 h-5" />
         Back to Home
@@ -154,11 +183,11 @@ useSeoMeta({
         <div class="relative max-w-screen-xl mx-auto px-4 md:px-6 pt-8 pb-16">
           <!-- Breadcrumb -->
           <nav class="flex items-center gap-2 text-sm text-text-secondary mb-8">
-            <NuxtLink to="/" class="hover:text-accent-primary transition-colors">Home</NuxtLink>
+            <NuxtLink to="/" class="hover:text-brand-light transition-colors">Home</NuxtLink>
             <Icon name="ph:caret-right" class="w-4 h-4" />
             <NuxtLink
               :to="`/category/${game.category.toLowerCase()}`"
-              class="hover:text-accent-primary transition-colors"
+              class="hover:text-brand-light transition-colors"
             >
               {{ game.category }}
             </NuxtLink>
@@ -172,13 +201,16 @@ useSeoMeta({
             <div class="space-y-6">
               <!-- Badges -->
               <div class="flex flex-wrap gap-2">
-                <span v-if="game.isHot" class="px-3 py-1 text-xs font-bold uppercase bg-warm-accent text-white rounded-lg">
+                <span v-if="game.isHot" class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold uppercase bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg shadow-lg shadow-orange-500/30">
+                  <Icon name="ph:fire-fill" class="w-3 h-3" />
                   Trending
                 </span>
-                <span v-if="game.isNew" class="px-3 py-1 text-xs font-bold uppercase bg-fresh-primary text-bg-void rounded-lg">
+                <span v-if="game.isNew" class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold uppercase bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg shadow-lg shadow-emerald-500/30">
+                  <Icon name="ph:sparkle-fill" class="w-3 h-3" />
                   New
                 </span>
-                <span v-if="game.isFeatured" class="px-3 py-1 text-xs font-bold uppercase bg-accent-primary text-white rounded-lg">
+                <span v-if="game.isFeatured" class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold uppercase bg-gradient-to-r from-brand to-brand-light text-white rounded-lg shadow-lg shadow-brand/30">
+                  <Icon name="ph:star-fill" class="w-3 h-3" />
                   Featured
                 </span>
               </div>
@@ -191,15 +223,15 @@ useSeoMeta({
               <!-- Meta -->
               <div class="flex flex-wrap items-center gap-4 text-sm">
                 <span class="flex items-center gap-1.5 text-text-secondary">
-                  <Icon name="ph:folder-fill" class="w-4 h-4 text-accent-primary" />
+                  <Icon name="ph:folder-fill" class="w-4 h-4 text-brand-light" />
                   {{ game.category }}
                 </span>
                 <span class="flex items-center gap-1.5 text-text-secondary">
-                  <Icon name="ph:play-circle-fill" class="w-4 h-4 text-accent-primary" />
+                  <Icon name="ph:play-circle-fill" class="w-4 h-4 text-brand-light" />
                   {{ formatPlays(game.plays) }} plays
                 </span>
                 <span class="flex items-center gap-1.5 text-text-secondary">
-                  <Icon name="ph:star-fill" class="w-4 h-4 text-warning" />
+                  <Icon name="ph:star-fill" class="w-4 h-4 text-yellow-400" />
                   {{ game.rating.toFixed(1) }}
                 </span>
               </div>
@@ -212,7 +244,7 @@ useSeoMeta({
               <!-- Play Button -->
               <div class="flex flex-wrap items-center gap-4 pt-2">
                 <button
-                  class="play-btn inline-flex items-center gap-3 px-8 py-4 bg-accent-primary hover:bg-accent-hover text-white font-bold text-lg rounded-2xl shadow-glow transition-all hover:scale-105"
+                  class="play-btn"
                   @click="startPlaying"
                 >
                   <Icon name="ph:play-fill" class="w-6 h-6" />
@@ -222,14 +254,14 @@ useSeoMeta({
                 <div class="flex items-center gap-2">
                   <button
                     class="p-3 bg-bg-surface/80 backdrop-blur-sm rounded-xl hover:bg-bg-surface transition-all"
-                    :class="isFavorite ? 'text-warm-accent' : 'text-text-secondary hover:text-warm-accent'"
+                    :class="isFavorite ? 'text-pink' : 'text-text-secondary hover:text-pink'"
                     :title="isFavorite ? 'Remove from Favorites' : 'Add to Favorites'"
                     @click="toggleFavorite"
                   >
                     <Icon :name="isFavorite ? 'ph:heart-fill' : 'ph:heart'" class="w-5 h-5" />
                   </button>
                   <button
-                    class="p-3 bg-bg-surface/80 backdrop-blur-sm text-text-secondary rounded-xl hover:text-accent-primary hover:bg-bg-surface transition-all"
+                    class="p-3 bg-bg-surface/80 backdrop-blur-sm text-text-secondary rounded-xl hover:text-brand-light hover:bg-bg-surface transition-all"
                     title="Share Game"
                     @click="shareGame"
                   >
@@ -240,16 +272,16 @@ useSeoMeta({
 
               <!-- Features -->
               <div class="flex flex-wrap gap-3 pt-2">
-                <span v-if="game.touch" class="flex items-center gap-1.5 px-3 py-1.5 bg-bg-surface/60 backdrop-blur-sm rounded-lg text-sm text-text-secondary">
-                  <Icon name="ph:hand-tap" class="w-4 h-4 text-cyan-primary" />
+                <span v-if="game.touch" class="flex items-center gap-1.5 px-3 py-1.5 bg-bg-surface/60 backdrop-blur-sm rounded-xl text-sm text-text-secondary border border-cyan/20">
+                  <Icon name="ph:hand-tap" class="w-4 h-4 text-cyan" />
                   Touch Controls
                 </span>
-                <span v-if="game.responsive" class="flex items-center gap-1.5 px-3 py-1.5 bg-bg-surface/60 backdrop-blur-sm rounded-lg text-sm text-text-secondary">
-                  <Icon name="ph:devices" class="w-4 h-4 text-cyan-primary" />
+                <span v-if="game.responsive" class="flex items-center gap-1.5 px-3 py-1.5 bg-bg-surface/60 backdrop-blur-sm rounded-xl text-sm text-text-secondary border border-cyan/20">
+                  <Icon name="ph:devices" class="w-4 h-4 text-cyan" />
                   Responsive
                 </span>
-                <span v-if="game.orientation" class="flex items-center gap-1.5 px-3 py-1.5 bg-bg-surface/60 backdrop-blur-sm rounded-lg text-sm text-text-secondary">
-                  <Icon name="ph:device-rotate" class="w-4 h-4 text-cyan-primary" />
+                <span v-if="game.orientation" class="flex items-center gap-1.5 px-3 py-1.5 bg-bg-surface/60 backdrop-blur-sm rounded-xl text-sm text-text-secondary border border-cyan/20">
+                  <Icon name="ph:device-rotate" class="w-4 h-4 text-cyan" />
                   {{ game.orientation === 'landscape' ? 'Landscape' : 'Portrait' }}
                 </span>
               </div>
@@ -257,14 +289,14 @@ useSeoMeta({
 
             <!-- Right: Game Preview -->
             <div class="hidden lg:block">
-              <div class="relative aspect-video rounded-2xl overflow-hidden shadow-lg-dark group cursor-pointer" @click="startPlaying">
+              <div class="game-preview-card group cursor-pointer" @click="startPlaying">
                 <img
                   :src="game.thumbnail"
                   :alt="game.title"
                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div class="absolute inset-0 bg-bg-void/40 flex items-center justify-center group-hover:bg-bg-void/60 transition-colors">
-                  <div class="w-20 h-20 rounded-full bg-accent-primary flex items-center justify-center shadow-glow transform group-hover:scale-110 transition-all">
+                  <div class="play-icon-large">
                     <Icon name="ph:play-fill" class="w-10 h-10 text-white ml-1" />
                   </div>
                 </div>
@@ -278,11 +310,11 @@ useSeoMeta({
       <div v-else class="max-w-screen-xl mx-auto px-4 md:px-6 py-6">
         <!-- Breadcrumb -->
         <nav class="flex items-center gap-2 text-sm text-text-muted mb-4">
-          <NuxtLink to="/" class="hover:text-accent-primary transition-colors">Home</NuxtLink>
+          <NuxtLink to="/" class="hover:text-brand-light transition-colors">Home</NuxtLink>
           <Icon name="ph:caret-right" class="w-4 h-4" />
           <NuxtLink
             :to="`/category/${game.category.toLowerCase()}`"
-            class="hover:text-accent-primary transition-colors"
+            class="hover:text-brand-light transition-colors"
           >
             {{ game.category }}
           </NuxtLink>
@@ -294,7 +326,7 @@ useSeoMeta({
         <GamePlayer :game="game" />
 
         <!-- Game Info Bar -->
-        <div class="mt-4 p-4 bg-bg-surface rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="mt-4 p-4 bg-bg-surface rounded-2xl border border-brand/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div class="flex items-center gap-4">
             <h1 class="text-xl font-bold text-text-primary">{{ game.title }}</h1>
             <div class="hidden md:flex items-center gap-3 text-sm text-text-muted">
@@ -307,7 +339,7 @@ useSeoMeta({
                 {{ formatPlays(game.plays) }}
               </span>
               <span class="flex items-center gap-1">
-                <Icon name="ph:star-fill" class="w-4 h-4 text-warning" />
+                <Icon name="ph:star-fill" class="w-4 h-4 text-yellow-400" />
                 {{ game.rating.toFixed(1) }}
               </span>
             </div>
@@ -315,15 +347,15 @@ useSeoMeta({
 
           <div class="flex items-center gap-2">
             <button
-              class="p-2 bg-bg-elevated rounded-lg transition-colors"
-              :class="isFavorite ? 'text-warm-accent' : 'text-text-secondary hover:text-warm-accent'"
+              class="p-2 bg-bg-elevated rounded-xl transition-colors"
+              :class="isFavorite ? 'text-pink' : 'text-text-secondary hover:text-pink'"
               :title="isFavorite ? 'Remove from Favorites' : 'Add to Favorites'"
               @click="toggleFavorite"
             >
               <Icon :name="isFavorite ? 'ph:heart-fill' : 'ph:heart'" class="w-5 h-5" />
             </button>
             <button
-              class="p-2 bg-bg-elevated text-text-secondary rounded-lg hover:text-accent-primary transition-colors"
+              class="p-2 bg-bg-elevated text-text-secondary rounded-xl hover:text-brand-light transition-colors"
               title="Share Game"
               @click="shareGame"
             >
@@ -336,7 +368,7 @@ useSeoMeta({
       <!-- Additional Content -->
       <div class="max-w-screen-xl mx-auto px-4 md:px-6 py-8 space-y-10">
         <!-- Game Details Card (only when playing) -->
-        <div v-if="isPlaying" class="p-6 bg-bg-surface rounded-2xl">
+        <div v-if="isPlaying" class="p-6 bg-bg-surface rounded-2xl border border-brand/10">
           <h2 class="text-lg font-bold text-text-primary mb-3">About this game</h2>
           <p class="text-text-secondary mb-4">{{ game.description }}</p>
 
@@ -346,7 +378,7 @@ useSeoMeta({
               v-for="tag in game.tags"
               :key="tag"
               :to="`/category/${tag}`"
-              class="px-3 py-1.5 text-sm bg-bg-elevated text-text-secondary rounded-lg hover:bg-bg-hover hover:text-text-primary transition-colors"
+              class="px-3 py-1.5 text-sm bg-bg-elevated text-text-secondary rounded-xl hover:bg-brand/20 hover:text-brand-light transition-colors border border-transparent hover:border-brand/30"
             >
               {{ tag }}
             </NuxtLink>
@@ -374,15 +406,44 @@ useSeoMeta({
 
 <style scoped>
 .play-btn {
+  @apply inline-flex items-center gap-3 px-8 py-4 text-white font-bold text-lg rounded-2xl transition-all hover:scale-105;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c084fc 100%);
+  background-size: 200% 200%;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
   animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.play-btn:hover {
+  background-position: 100% 100%;
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.6);
 }
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(104, 66, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
   }
   50% {
-    box-shadow: 0 0 40px rgba(104, 66, 255, 0.6);
+    box-shadow: 0 8px 40px rgba(139, 92, 246, 0.7);
   }
+}
+
+.game-preview-card {
+  @apply relative aspect-video rounded-2xl overflow-hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(139, 92, 246, 0.2);
+}
+
+.game-preview-card:hover {
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2);
+}
+
+.play-icon-large {
+  @apply w-20 h-20 rounded-full flex items-center justify-center transform transition-all;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+}
+
+.group:hover .play-icon-large {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.6);
 }
 </style>

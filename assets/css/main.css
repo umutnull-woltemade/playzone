@@ -10,6 +10,11 @@
 
   body {
     @apply min-h-screen;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 40%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 80% at 80% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 60% at 60% 80%, rgba(236, 72, 153, 0.04) 0%, transparent 50%),
+      #0f0a1f;
   }
 
   /* Improved scrollbar */
@@ -19,17 +24,18 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-bg-surface;
+    background: #160f2a;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-bg-subtle rounded-full;
+    @apply rounded-full;
+    background: rgba(139, 92, 246, 0.3);
     border: 2px solid transparent;
     background-clip: content-box;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-bg-hover;
+    background: rgba(139, 92, 246, 0.5);
   }
 
   /* Hide scrollbar for category tabs */
@@ -43,29 +49,31 @@
 
   /* Selection color */
   ::selection {
-    @apply bg-accent/30 text-text-primary;
+    background: rgba(139, 92, 246, 0.3);
+    @apply text-text-primary;
   }
 }
 
 @layer components {
   /* Focus ring for accessibility */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2 focus:ring-offset-bg-void;
+    @apply focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 focus:ring-offset-bg-void;
   }
 
   /* Glass effect for overlays */
   .glass {
-    @apply bg-bg-void/80 backdrop-blur-md;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(15, 10, 31, 0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(139, 92, 246, 0.1);
   }
 
   .glass-card {
     background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.05) 0%,
+      rgba(139, 92, 246, 0.08) 0%,
       rgba(255, 255, 255, 0.02) 100%
     );
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.12);
     @apply backdrop-blur-md;
   }
 
@@ -84,22 +92,41 @@
     overflow: hidden;
   }
 
-  /* Gradient text */
+  /* Gradient text - Brand */
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #ec4899 100%);
+    background-image: linear-gradient(135deg, #c084fc 0%, #a78bfa 50%, #8b5cf6 100%);
+  }
+
+  .gradient-text-brand {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #c084fc 0%, #a78bfa 50%, #8b5cf6 100%);
   }
 
   .gradient-text-cyan {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
   }
+
+  .gradient-text-pink {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+  }
+
+  /* Section title styling */
+  .section-title {
+    @apply text-lg md:text-xl font-bold text-text-primary font-display;
+  }
 }
 
 @layer utilities {
   /* Custom glow effects */
+  .glow-brand {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+  }
+
   .glow-accent {
-    box-shadow: 0 0 30px rgba(124, 58, 237, 0.4);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
   }
 
   .glow-cyan {
@@ -112,7 +139,7 @@
 
   /* Gradient overlay for cards */
   .gradient-overlay {
-    background: linear-gradient(to top, rgba(10, 11, 16, 0.95) 0%, rgba(10, 11, 16, 0.5) 50%, transparent 100%);
+    background: linear-gradient(to top, rgba(15, 10, 31, 0.95) 0%, rgba(15, 10, 31, 0.5) 50%, transparent 100%);
   }
 
   /* Subtle border glow on hover */
@@ -125,11 +152,11 @@
     position: absolute;
     inset: -1px;
     border-radius: inherit;
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(6, 182, 212, 0.2), rgba(236, 72, 153, 0.3));
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(6, 182, 212, 0.2), rgba(236, 72, 153, 0.3));
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: -1;
-    filter: blur(8px);
+    filter: blur(12px);
   }
 
   .border-glow:hover::before {
@@ -143,6 +170,11 @@
 
   .text-shadow-lg {
     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+  }
+
+  /* Neon text effect */
+  .text-neon {
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.3);
   }
 }
 

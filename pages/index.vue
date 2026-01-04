@@ -2,13 +2,13 @@
 import type { Game } from '~/types/game'
 
 useSeoMeta({
-  title: 'PlayZone - Free Online Games | Play Instantly',
+  title: 'Andromeda Games - Free Online Games | Play Instantly',
   description: 'Play the best free online games instantly. No downloads, no signup. Action, puzzle, racing, sports and more!',
 })
 
-// Fetch games from API
+// Fetch games from API - use mixed sort for variety
 const { data, pending, error } = await useFetch('/api/games', {
-  query: { limit: 100, sort: 'popular' },
+  query: { limit: 500, sort: 'mixed' },
 })
 
 // Derived game lists
@@ -48,6 +48,42 @@ const arcadeGames = computed(() =>
   ).slice(0, 12)
 )
 
+const shooterGames = computed(() =>
+  games.value.filter((g: Game) =>
+    g.category.toLowerCase() === 'shooter' ||
+    g.category.toLowerCase() === 'shooting' ||
+    g.categories?.some(c => c.toLowerCase() === 'shooter' || c.toLowerCase() === 'shooting')
+  ).slice(0, 12)
+)
+
+// Recently played games (client-side only)
+const recentSlugs = ref<string[]>([])
+const recentGames = computed(() => {
+  if (!games.value.length || !recentSlugs.value.length) return []
+
+  const gameMap = new Map<string, Game>()
+  games.value.forEach((game: Game) => {
+    gameMap.set(game.slug, game)
+  })
+
+  return recentSlugs.value
+    .map(slug => gameMap.get(slug))
+    .filter((game): game is Game => !!game)
+    .slice(0, 12)
+})
+
+onMounted(() => {
+  // Load recently played from localStorage
+  const stored = localStorage.getItem('andromeda-recent')
+  if (stored) {
+    try {
+      recentSlugs.value = JSON.parse(stored)
+    } catch {
+      recentSlugs.value = []
+    }
+  }
+})
+
 // "Top picks for you" - mix of popular and featured
 const topPicks = computed(() => {
   const picks = [...games.value]
@@ -71,7 +107,7 @@ const topPicks = computed(() => {
 
       <!-- Quick Filters Skeleton -->
       <div class="flex gap-2 overflow-hidden">
-        <div v-for="i in 8" :key="i" class="h-10 w-24 bg-bg-surface rounded-full animate-pulse flex-shrink-0" />
+        <div v-for="i in 8" :key="i" class="h-10 w-24 bg-bg-surface rounded-xl animate-pulse flex-shrink-0" />
       </div>
 
       <!-- Rows Skeleton -->
@@ -79,7 +115,7 @@ const topPicks = computed(() => {
         <div class="h-8 w-48 bg-bg-surface rounded animate-pulse" />
         <div class="flex gap-3 overflow-hidden">
           <div v-for="j in 6" :key="j" class="flex-shrink-0 w-44">
-            <div class="aspect-[4/3] bg-bg-surface rounded-xl animate-pulse" />
+            <div class="aspect-[4/3] bg-bg-surface rounded-2xl animate-pulse" />
             <div class="h-4 w-32 bg-bg-surface rounded mt-2 animate-pulse" />
           </div>
         </div>
@@ -94,7 +130,7 @@ const topPicks = computed(() => {
       <h2 class="text-2xl font-bold text-text-primary mb-2">Failed to load games</h2>
       <p class="text-text-secondary mb-6">Please try refreshing the page.</p>
       <button
-        class="inline-flex items-center gap-2 px-6 py-3 bg-accent-primary hover:bg-accent-hover text-white font-bold rounded-xl transition-all"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl transition-all shadow-glow-sm hover:shadow-glow"
         @click="() => refreshNuxtData()"
       >
         <Icon name="ph:arrow-clockwise" class="w-5 h-5" />
@@ -104,23 +140,32 @@ const topPicks = computed(() => {
 
     <!-- Content -->
     <template v-else>
-      <div class="max-w-screen-2xl mx-auto px-4 md:px-6 py-6 space-y-8">
+      <div class="max-w-screen-2xl mx-auto px-4 md:px-6 py-6 space-y-10">
         <!-- Featured Carousel -->
         <FeaturedCarousel v-if="featuredGames.length > 0" :games="featuredGames" />
 
         <!-- Quick Category Filters -->
         <QuickFilters />
 
+        <!-- Recently Played (only shows if user has history) -->
+        <GameCarouselRow
+          v-if="recentGames.length > 0"
+          title="Continue Playing"
+          icon="ph:clock-counter-clockwise-fill"
+          :games="recentGames"
+          href="/recent"
+        />
+
         <!-- Top Picks Grid -->
         <section>
-          <div class="flex items-center gap-3 mb-5">
-            <div class="p-2 bg-accent-muted rounded-lg">
-              <Icon name="ph:star-fill" class="w-5 h-5 text-accent-primary" />
+          <div class="flex items-center gap-3 mb-6">
+            <div class="p-2.5 bg-brand-muted rounded-xl">
+              <Icon name="ph:star-fill" class="w-5 h-5 text-brand-light" />
             </div>
-            <h2 class="text-lg md:text-xl font-bold text-text-primary">Top picks for you</h2>
+            <h2 class="text-xl font-bold text-text-primary font-display">Top picks for you</h2>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             <GameCard
               v-for="(game, index) in topPicks.slice(0, 12)"
               :key="game.id"
@@ -184,39 +229,48 @@ const topPicks = computed(() => {
           href="/category/arcade"
         />
 
+        <!-- Shooter Games -->
+        <GameCarouselRow
+          v-if="shooterGames.length > 0"
+          title="Shooter Games"
+          icon="ph:crosshair-fill"
+          :games="shooterGames"
+          href="/category/shooter"
+        />
+
         <!-- All Games Section -->
         <section class="pt-4">
-          <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
-              <div class="p-2 bg-cyan-muted rounded-lg">
-                <Icon name="ph:squares-four-fill" class="w-5 h-5 text-cyan-primary" />
+              <div class="p-2.5 bg-cyan-muted rounded-xl">
+                <Icon name="ph:planet-fill" class="w-5 h-5 text-cyan-light" />
               </div>
               <div>
-                <h2 class="text-lg md:text-xl font-bold text-text-primary">All Games</h2>
+                <h2 class="text-xl font-bold text-text-primary font-display">Explore All Games</h2>
                 <p class="text-sm text-text-muted">{{ games.length }} games available</p>
               </div>
             </div>
             <NuxtLink
               to="/category/all"
-              class="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-accent-primary hover:text-accent-hover bg-accent-muted hover:bg-accent-primary/20 rounded-lg transition-all"
+              class="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-brand-light hover:text-white bg-brand-muted hover:bg-brand rounded-xl transition-all"
             >
               View All
               <Icon name="ph:arrow-right" class="w-4 h-4" />
             </NuxtLink>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             <GameCard v-for="game in games.slice(0, 24)" :key="game.id" :game="game" />
           </div>
 
-          <div class="text-center mt-8">
+          <div class="text-center mt-10">
             <NuxtLink
               to="/category/all"
-              class="inline-flex items-center gap-2 px-8 py-3.5 bg-bg-surface hover:bg-bg-elevated text-text-primary font-semibold rounded-xl border border-bg-subtle hover:border-accent-primary/30 transition-all hover:shadow-lg"
+              class="inline-flex items-center gap-3 px-8 py-4 bg-bg-surface hover:bg-bg-elevated text-text-primary font-semibold rounded-2xl border border-brand-muted hover:border-brand/40 transition-all hover:shadow-glow-sm group"
             >
-              <Icon name="ph:squares-four" class="w-5 h-5" />
+              <Icon name="ph:planet" class="w-5 h-5 text-brand-light group-hover:animate-spin-slow" />
               Browse All Games
-              <Icon name="ph:arrow-right" class="w-5 h-5" />
+              <Icon name="ph:arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </NuxtLink>
           </div>
         </section>

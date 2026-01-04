@@ -13,23 +13,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Background Layers
-        'bg-void': '#0a0b10',
-        'bg-surface': '#12131c',
-        'bg-elevated': '#1a1b28',
-        'bg-subtle': '#232536',
-        'bg-hover': '#2c2e44',
+        // Background Layers - Deep space purple theme
+        'bg-void': '#0f0a1f',
+        'bg-surface': '#160f2a',
+        'bg-elevated': '#1e1535',
+        'bg-subtle': '#2a1f45',
+        'bg-hover': '#352a55',
 
-        // Primary Accent - Purple/Violet
-        accent: {
-          DEFAULT: '#7c3aed',
+        // Brand Colors - Purple/Violet
+        brand: {
+          DEFAULT: '#8b5cf6',
           light: '#a78bfa',
-          dark: '#5b21b6',
-          muted: 'rgba(124, 58, 237, 0.15)',
-          glow: 'rgba(124, 58, 237, 0.4)',
+          lighter: '#c084fc',
+          dark: '#7c3aed',
+          darker: '#6d28d9',
+          muted: 'rgba(139, 92, 246, 0.15)',
+          glow: 'rgba(139, 92, 246, 0.4)',
         },
 
-        // Secondary Accent - Cyan
+        // Primary Accent - Purple/Violet (for backward compat)
+        accent: {
+          DEFAULT: '#8b5cf6',
+          light: '#a78bfa',
+          dark: '#7c3aed',
+          muted: 'rgba(139, 92, 246, 0.15)',
+          glow: 'rgba(139, 92, 246, 0.4)',
+        },
+
+        // Secondary Accent - Cyan/Teal
         cyan: {
           DEFAULT: '#06b6d4',
           light: '#22d3ee',
@@ -38,7 +49,7 @@ export default {
           glow: 'rgba(6, 182, 212, 0.4)',
         },
 
-        // Tertiary Accent - Pink
+        // Tertiary Accent - Pink/Magenta
         pink: {
           DEFAULT: '#ec4899',
           light: '#f472b6',
@@ -66,8 +77,8 @@ export default {
         // Text
         text: {
           primary: '#f8fafc',
-          secondary: '#94a3b8',
-          muted: '#64748b',
+          secondary: '#a1a1aa',
+          muted: '#71717a',
           inverse: '#0f172a',
         },
 
@@ -79,7 +90,7 @@ export default {
       },
 
       fontFamily: {
-        display: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
         body: ['Inter', 'system-ui', 'sans-serif'],
       },
 
@@ -98,19 +109,22 @@ export default {
         'DEFAULT': '8px',
         'md': '12px',
         'lg': '16px',
-        'xl': '24px',
-        '2xl': '32px',
+        'xl': '20px',
+        '2xl': '24px',
+        '3xl': '32px',
       },
 
       boxShadow: {
         'card': '0 4px 12px rgba(0, 0, 0, 0.4)',
-        'card-hover': '0 8px 24px rgba(0, 0, 0, 0.5)',
-        'glow': '0 0 40px rgba(124, 58, 237, 0.4)',
+        'card-hover': '0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.2)',
+        'glow': '0 0 40px rgba(139, 92, 246, 0.4)',
+        'glow-sm': '0 0 20px rgba(139, 92, 246, 0.3)',
         'glow-cyan': '0 0 40px rgba(6, 182, 212, 0.4)',
         'glow-pink': '0 0 40px rgba(236, 72, 153, 0.4)',
-        'lg-dark': '0 16px 48px rgba(0, 0, 0, 0.5)',
+        'lg-dark': '0 20px 60px rgba(0, 0, 0, 0.6)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         'glass': '0 8px 32px rgba(0, 0, 0, 0.3)',
+        'neon': '0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.3), 0 0 60px rgba(139, 92, 246, 0.1)',
       },
 
       backdropBlur: {
@@ -137,6 +151,7 @@ export default {
         'particle-float': 'particleFloat 20s linear infinite',
         'spin-slow': 'spin 8s linear infinite',
         'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
+        'gradient-x': 'gradientX 3s ease infinite',
       },
 
       keyframes: {
@@ -203,23 +218,28 @@ export default {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-5px)' },
         },
+        gradientX: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
       },
 
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'gradient-mesh-calm': `
-          radial-gradient(ellipse 80% 50% at 20% 40%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
-          radial-gradient(ellipse 60% 80% at 80% 20%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
-          radial-gradient(ellipse 50% 60% at 60% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%)
+        'gradient-mesh': `
+          radial-gradient(ellipse 80% 50% at 20% 40%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+          radial-gradient(ellipse 60% 80% at 80% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+          radial-gradient(ellipse 50% 60% at 60% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%)
         `,
-        'gradient-mesh-energetic': `
-          radial-gradient(ellipse 100% 60% at 10% 30%, rgba(124, 58, 237, 0.25) 0%, transparent 50%),
-          radial-gradient(ellipse 80% 100% at 90% 10%, rgba(6, 182, 212, 0.2) 0%, transparent 50%),
-          radial-gradient(ellipse 70% 80% at 50% 90%, rgba(236, 72, 153, 0.18) 0%, transparent 50%)
+        'gradient-mesh-intense': `
+          radial-gradient(ellipse 100% 60% at 10% 30%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
+          radial-gradient(ellipse 80% 100% at 90% 10%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+          radial-gradient(ellipse 70% 80% at 50% 90%, rgba(236, 72, 153, 0.12) 0%, transparent 50%)
         `,
-        'gradient-card': 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
+        'gradient-card': 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
         'gradient-shine': 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%)',
+        'gradient-brand': 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c084fc 100%)',
       },
 
       transitionTimingFunction: {

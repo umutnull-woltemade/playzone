@@ -20,10 +20,8 @@ const emit = defineEmits<{
       <!-- All Games -->
       <NuxtLink
         to="/"
-        class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all duration-150"
-        :class="!active
-          ? 'bg-accent-muted text-accent-primary border border-accent-primary/30'
-          : 'bg-bg-surface text-text-secondary hover:bg-bg-elevated hover:text-text-primary'"
+        class="category-tab"
+        :class="!active ? 'category-tab-active' : ''"
       >
         <Icon name="ph:squares-four-fill" class="w-4 h-4" />
         <span>All</span>
@@ -34,10 +32,8 @@ const emit = defineEmits<{
         v-for="category in categories"
         :key="category.slug"
         :to="`/category/${category.slug}`"
-        class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all duration-150"
-        :class="active === category.slug
-          ? 'bg-accent-muted text-accent-primary border border-accent-primary/30'
-          : 'bg-bg-surface text-text-secondary hover:bg-bg-elevated hover:text-text-primary'"
+        class="category-tab"
+        :class="active === category.slug ? 'category-tab-active' : ''"
       >
         <Icon :name="category.icon" class="w-4 h-4" />
         <span>{{ category.name }}</span>
@@ -45,3 +41,23 @@ const emit = defineEmits<{
     </div>
   </div>
 </template>
+
+<style scoped>
+.category-tab {
+  @apply flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl whitespace-nowrap;
+  @apply bg-bg-surface text-text-secondary;
+  @apply transition-all duration-200;
+  border: 1px solid transparent;
+}
+
+.category-tab:hover {
+  @apply bg-bg-elevated text-text-primary;
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.category-tab-active {
+  @apply text-brand-light;
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+</style>

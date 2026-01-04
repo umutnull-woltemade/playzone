@@ -8,6 +8,36 @@ import { fetchGamePixGames, normalizeGamePixGame } from '../gamepix'
 import { fetchGameMonetizeGames, normalizeGameMonetizeGame } from '../gamemonetize'
 import { fetchHTMLGamesGames, normalizeHTMLGamesGame } from '../htmlgames'
 
+/**
+ * Temporarily disabled games list
+ * Games can be disabled by slug when their embed URLs are broken
+ * Re-enable when the provider fixes the issue
+ *
+ * Format: { slug: 'reason for disabling' }
+ */
+export const DISABLED_GAMES: Record<string, string> = {
+  // Open Source games with broken embed URLs (nickslevine.github.io doesn't exist)
+  'space-huggers': 'Embed URL returns 404 - nickslevine.github.io not found',
+  'tank-royale': 'Embed URL returns 404 - nickslevine.github.io not found',
+  'xibalba': 'Embed URL returns 404 - nickslevine.github.io not found',
+  'space-shooter-pro': 'Embed URL returns 404 - nickslevine.github.io not found',
+  // Add more broken games here as needed
+}
+
+/**
+ * Check if a game is disabled
+ */
+export function isGameDisabled(slug: string): boolean {
+  return slug in DISABLED_GAMES
+}
+
+/**
+ * Get reason why a game is disabled
+ */
+export function getDisabledReason(slug: string): string | null {
+  return DISABLED_GAMES[slug] || null
+}
+
 // Provider configurations
 export const PROVIDERS: Record<ProviderType, ProviderConfig> = {
   gamepix: {
@@ -157,16 +187,30 @@ export async function getAllProviderGames(): Promise<UnifiedGame[]> {
     .filter(p => p.enabled)
     .sort((a, b) => a.priority - b.priority)
 
+  console.log(`[Catalog] Fetching from ${enabledProviders.length} providers: ${enabledProviders.map(p => p.id).join(', ')}`)
+
   const results = await Promise.all(
     enabledProviders.map(p => getProviderGames(p.id))
   )
 
+  // Log results per provider
+  for (const result of results) {
+    console.log(`[Catalog] ${result.provider}: ${result.games.length} games, cached: ${result.cached}, error: ${result.error || 'none'}`)
+  }
+
   // Merge and deduplicate games
   const allGames: UnifiedGame[] = []
   const seenTitles = new Set<string>()
+  let disabledCount = 0
 
   for (const result of results) {
     for (const game of result.games) {
+      // Skip disabled games
+      if (isGameDisabled(game.slug)) {
+        disabledCount++
+        continue
+      }
+
       const normalizedTitle = game.title.toLowerCase().replace(/[^a-z0-9]/g, '')
       if (!seenTitles.has(normalizedTitle)) {
         seenTitles.add(normalizedTitle)
@@ -175,6 +219,10 @@ export async function getAllProviderGames(): Promise<UnifiedGame[]> {
     }
   }
 
+  if (disabledCount > 0) {
+    console.log(`[Catalog] Filtered out ${disabledCount} disabled games`)
+  }
+  console.log(`[Catalog] Total unique games: ${allGames.length}`)
   return allGames
 }
 
@@ -194,27 +242,34 @@ export function invalidateProviderCache(provider?: ProviderType): void {
 // ============================================
 
 async function fetchGamePixProviderGames(): Promise<UnifiedGame[]> {
-  const rawGames = await fetchGamePixGames()
-  return rawGames.map(g => {
-    const normalized = normalizeGamePixGame(g)
-    return {
-      ...normalized,
-      providerId: String(g.id),
-      popularity: Math.min(100, Math.floor(normalized.plays / 100)),
-      embedType: 'iframe' as const,
-      embedConfig: {
-        width: g.width || 800,
-        height: g.height || 600,
-        allowFullscreen: true,
-        sandbox: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
-      },
-      attribution: {
-        provider: 'GamePix',
-        providerUrl: 'https://www.gamepix.com',
-        license: 'Publisher Embed License',
-      },
-    }
-  })
+  try {
+    const rawGames = await fetchGamePixGames()
+    console.log(`[GamePix] Fetched ${rawGames.length} raw games`)
+
+    return rawGames.map((g, index) => {
+      const normalized = normalizeGamePixGame(g, index)
+      return {
+        ...normalized,
+        providerId: String(g.id),
+        popularity: Math.min(100, Math.floor(normalized.plays / 100)),
+        embedType: 'iframe' as const,
+        embedConfig: {
+          width: g.width || 800,
+          height: g.height || 600,
+          allowFullscreen: true,
+          sandbox: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
+        },
+        attribution: {
+          provider: 'GamePix',
+          providerUrl: 'https://www.gamepix.com',
+          license: 'Publisher Embed License',
+        },
+      }
+    })
+  } catch (error) {
+    console.error('[GamePix] Failed to fetch games:', error)
+    return []
+  }
 }
 
 async function fetchGameMonetizeProviderGames(): Promise<UnifiedGame[]> {
