@@ -2,6 +2,10 @@
 #gpx-last-updated-2024-11-21
 #gpx-reviq
 rev.iq, Kf077RYmx6XvWT8mhSbYq7LIQTU, DIRECT
+
+#GameMonetize.com
+google.com, pub-5519830896693885, DIRECT, f08c47fec0942fa0
+google.com, pub-4764333688337558, DIRECT, f08c47fec0942fa
 google.com, pub-6729046591418183, DIRECT, f08c47fec0942fa0
 Media.net, 8CUUN62FF, DIRECT
 openx.com, 540447780, DIRECT, 6a698e2ec38604c6
