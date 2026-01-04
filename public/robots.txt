@@ -1,0 +1,18 @@
+# PlayZone robots.txt
+# https://playzone-eul.pages.dev
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://playzone-eul.pages.dev/sitemap.xml
+
+# Disallow API endpoints
+Disallow: /api/
+
+# Disallow admin or private paths (if any)
+Disallow: /_nuxt/
+Disallow: /__nuxt_error
+
+# Crawl-delay for politeness
+Crawl-delay: 1

@@ -13,6 +13,60 @@ const similarGames = computed(() => data.value?.similarGames || [])
 // Game state
 const isPlaying = ref(false)
 
+// Favorites state
+const favorites = ref<string[]>([])
+const isFavorite = computed(() => game.value ? favorites.value.includes(game.value.slug) : false)
+
+// Load favorites from localStorage on mount
+onMounted(() => {
+  const stored = localStorage.getItem('playzone-favorites')
+  if (stored) {
+    try {
+      favorites.value = JSON.parse(stored)
+    } catch {
+      favorites.value = []
+    }
+  }
+})
+
+// Toggle favorite
+function toggleFavorite() {
+  if (!game.value) return
+
+  const gameSlug = game.value.slug
+  if (favorites.value.includes(gameSlug)) {
+    favorites.value = favorites.value.filter(s => s !== gameSlug)
+  } else {
+    favorites.value = [...favorites.value, gameSlug]
+  }
+
+  localStorage.setItem('playzone-favorites', JSON.stringify(favorites.value))
+}
+
+// Share game
+async function shareGame() {
+  if (!game.value) return
+
+  const shareData = {
+    title: `${game.value.title} - PlayZone`,
+    text: game.value.description,
+    url: window.location.href,
+  }
+
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData)
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(window.location.href)
+      alert('Link copied to clipboard!')
+    }
+  } catch (err) {
+    // User cancelled share or error occurred
+    console.log('Share failed:', err)
+  }
+}
+
 // 404 if game not found (after loading)
 if (!pending.value && error.value) {
   throw createError({
@@ -167,14 +221,17 @@ useSeoMeta({
 
                 <div class="flex items-center gap-2">
                   <button
-                    class="p-3 bg-bg-surface/80 backdrop-blur-sm text-text-secondary rounded-xl hover:text-warm-accent hover:bg-bg-surface transition-all"
-                    title="Add to Favorites"
+                    class="p-3 bg-bg-surface/80 backdrop-blur-sm rounded-xl hover:bg-bg-surface transition-all"
+                    :class="isFavorite ? 'text-warm-accent' : 'text-text-secondary hover:text-warm-accent'"
+                    :title="isFavorite ? 'Remove from Favorites' : 'Add to Favorites'"
+                    @click="toggleFavorite"
                   >
-                    <Icon name="ph:heart" class="w-5 h-5" />
+                    <Icon :name="isFavorite ? 'ph:heart-fill' : 'ph:heart'" class="w-5 h-5" />
                   </button>
                   <button
                     class="p-3 bg-bg-surface/80 backdrop-blur-sm text-text-secondary rounded-xl hover:text-accent-primary hover:bg-bg-surface transition-all"
                     title="Share Game"
+                    @click="shareGame"
                   >
                     <Icon name="ph:share-network" class="w-5 h-5" />
                   </button>
@@ -258,14 +315,17 @@ useSeoMeta({
 
           <div class="flex items-center gap-2">
             <button
-              class="p-2 bg-bg-elevated text-text-secondary rounded-lg hover:text-warm-accent transition-colors"
-              title="Add to Favorites"
+              class="p-2 bg-bg-elevated rounded-lg transition-colors"
+              :class="isFavorite ? 'text-warm-accent' : 'text-text-secondary hover:text-warm-accent'"
+              :title="isFavorite ? 'Remove from Favorites' : 'Add to Favorites'"
+              @click="toggleFavorite"
             >
-              <Icon name="ph:heart" class="w-5 h-5" />
+              <Icon :name="isFavorite ? 'ph:heart-fill' : 'ph:heart'" class="w-5 h-5" />
             </button>
             <button
               class="p-2 bg-bg-elevated text-text-secondary rounded-lg hover:text-accent-primary transition-colors"
               title="Share Game"
+              @click="shareGame"
             >
               <Icon name="ph:share-network" class="w-5 h-5" />
             </button>

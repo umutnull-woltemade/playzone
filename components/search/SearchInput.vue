@@ -1,15 +1,28 @@
 <script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core'
+
 const emit = defineEmits<{
   search: [query: string]
 }>()
 
 const query = ref('')
+const debouncedQuery = ref('')
 const isFocused = ref(false)
 const { games } = useGames()
 
+// Debounce search input to avoid filtering on every keystroke
+const updateDebouncedQuery = useDebounceFn((value: string) => {
+  debouncedQuery.value = value
+}, 300)
+
+// Watch query changes and debounce
+watch(query, (newValue) => {
+  updateDebouncedQuery(newValue)
+})
+
 const results = computed(() => {
-  if (!query.value || query.value.length < 2) return []
-  const searchTerm = query.value.toLowerCase()
+  if (!debouncedQuery.value || debouncedQuery.value.length < 2) return []
+  const searchTerm = debouncedQuery.value.toLowerCase()
   return games.value
     .filter(game => game.title.toLowerCase().includes(searchTerm))
     .slice(0, 5)
@@ -17,6 +30,7 @@ const results = computed(() => {
 
 const handleSelect = (slug: string) => {
   query.value = ''
+  debouncedQuery.value = ''
   isFocused.value = false
   emit('search', slug)
   navigateTo(`/game/${slug}`)

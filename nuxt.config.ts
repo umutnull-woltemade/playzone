@@ -11,7 +11,18 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxt/icon',
+    '@nuxtjs/sitemap',
   ],
+
+  site: {
+    url: 'https://playzone-eul.pages.dev',
+    name: 'PlayZone - Free Online Games',
+  },
+
+  sitemap: {
+    sources: ['/api/__sitemap__/urls'],
+    exclude: ['/api/**'],
+  },
 
   components: [
     { path: '~/components/ui' },
