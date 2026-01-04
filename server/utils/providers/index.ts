@@ -6,6 +6,7 @@
 import type { ProviderConfig, ProviderType, UnifiedGame, ProviderResponse } from '~/types/provider'
 import { fetchGamePixGames, normalizeGamePixGame } from '../gamepix'
 import { fetchGameMonetizeGames, normalizeGameMonetizeGame } from '../gamemonetize'
+import { fetchHTMLGamesGames, normalizeHTMLGamesGame } from '../htmlgames'
 
 // Provider configurations
 export const PROVIDERS: Record<ProviderType, ProviderConfig> = {
@@ -37,6 +38,21 @@ export const PROVIDERS: Record<ProviderType, ProviderConfig> = {
     rateLimit: {
       requestsPerMinute: 10,
       cacheTtlSeconds: 1800, // 30 minutes
+    },
+  },
+  htmlgames: {
+    id: 'htmlgames',
+    name: 'HTMLGames',
+    enabled: true,
+    priority: 3,
+    apiEndpoint: 'https://htmlgames.com/rss/games.php?json',
+    attribution: {
+      name: 'HTMLGames',
+      url: 'https://www.htmlgames.com',
+    },
+    rateLimit: {
+      requestsPerMinute: 10,
+      cacheTtlSeconds: 3600, // 1 hour
     },
   },
   itchio: {
@@ -108,6 +124,9 @@ export async function getProviderGames(provider: ProviderType): Promise<Provider
         break
       case 'gamemonetize':
         games = await fetchGameMonetizeProviderGames()
+        break
+      case 'htmlgames':
+        games = await fetchHTMLGamesProviderGames()
         break
       case 'itchio':
         games = await fetchItchioProviderGames()
@@ -217,6 +236,30 @@ async function fetchGameMonetizeProviderGames(): Promise<UnifiedGame[]> {
         provider: 'GameMonetize',
         providerUrl: 'https://gamemonetize.com',
         license: 'Publisher Embed License',
+      },
+    }
+  })
+}
+
+async function fetchHTMLGamesProviderGames(): Promise<UnifiedGame[]> {
+  const rawGames = await fetchHTMLGamesGames()
+  return rawGames.map((g, index) => {
+    const normalized = normalizeHTMLGamesGame(g, index)
+    return {
+      ...normalized,
+      providerId: normalized.slug,
+      popularity: Math.max(0, 100 - index),
+      embedType: 'iframe' as const,
+      embedConfig: {
+        width: g.width,
+        height: g.height,
+        allowFullscreen: true,
+        sandbox: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
+      },
+      attribution: {
+        provider: 'HTMLGames',
+        providerUrl: 'https://www.htmlgames.com',
+        license: 'Free Embed License',
       },
     }
   })
