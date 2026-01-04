@@ -43,6 +43,8 @@ function toggleFavorite() {
   localStorage.setItem('andromeda-favorites', JSON.stringify(favorites.value))
 }
 
+const toast = useToast()
+
 // Share game
 async function shareGame() {
   if (!game.value) return
@@ -59,7 +61,7 @@ async function shareGame() {
     } else {
       // Fallback: copy to clipboard
       await navigator.clipboard.writeText(window.location.href)
-      alert('Link copied to clipboard!')
+      toast.success('Link copied to clipboard!')
     }
   } catch (err) {
     // User cancelled share or error occurred

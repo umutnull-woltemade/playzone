@@ -36,18 +36,24 @@ const favoriteGames = computed(() => {
   return allGames.value.filter((game: Game) => favorites.value.includes(game.slug))
 })
 
+const toast = useToast()
+
+// State for confirmation modal
+const showClearConfirm = ref(false)
+
 // Remove from favorites
 function removeFromFavorites(slug: string) {
   favorites.value = favorites.value.filter(s => s !== slug)
   localStorage.setItem('andromeda-favorites', JSON.stringify(favorites.value))
+  toast.success('Removed from favorites')
 }
 
 // Clear all favorites
 function clearAllFavorites() {
-  if (confirm('Are you sure you want to remove all favorites?')) {
-    favorites.value = []
-    localStorage.setItem('andromeda-favorites', JSON.stringify([]))
-  }
+  favorites.value = []
+  localStorage.setItem('andromeda-favorites', JSON.stringify([]))
+  showClearConfirm.value = false
+  toast.success('All favorites cleared')
 }
 </script>
 
@@ -71,7 +77,7 @@ function clearAllFavorites() {
         <button
           v-if="favoriteGames.length > 0"
           class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-colors"
-          @click="clearAllFavorites"
+          @click="showClearConfirm = true"
         >
           <Icon name="ph:trash" class="w-4 h-4" />
           Clear All
@@ -117,5 +123,49 @@ function clearAllFavorites() {
         </div>
       </div>
     </div>
+
+    <!-- Clear Confirmation Modal -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div v-if="showClearConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-bg-void/80 backdrop-blur-sm" @click="showClearConfirm = false" />
+
+          <!-- Modal -->
+          <div class="relative bg-bg-surface border border-brand/20 rounded-2xl p-6 max-w-sm w-full shadow-xl">
+            <div class="text-center">
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-4">
+                <Icon name="ph:warning-circle-fill" class="w-8 h-8 text-red-400" />
+              </div>
+              <h3 class="text-xl font-bold text-text-primary mb-2">Clear All Favorites?</h3>
+              <p class="text-text-secondary mb-6">
+                This will remove all {{ favoriteGames.length }} games from your favorites. This action cannot be undone.
+              </p>
+              <div class="flex gap-3">
+                <button
+                  class="flex-1 px-4 py-3 text-sm font-semibold text-text-primary bg-bg-elevated hover:bg-bg-hover rounded-xl transition-colors"
+                  @click="showClearConfirm = false"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="flex-1 px-4 py-3 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors"
+                  @click="clearAllFavorites"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>

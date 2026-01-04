@@ -111,16 +111,10 @@ const footerLinks = {
         <p class="text-sm text-text-muted">
           &copy; {{ new Date().getFullYear() }} Andromeda Games. All rights reserved.
         </p>
-        <div class="flex items-center gap-4">
-          <a href="#" class="social-link" aria-label="Twitter">
-            <Icon name="ph:twitter-logo" class="w-5 h-5" />
-          </a>
-          <a href="#" class="social-link" aria-label="Discord">
-            <Icon name="ph:discord-logo" class="w-5 h-5" />
-          </a>
-          <a href="#" class="social-link" aria-label="YouTube">
-            <Icon name="ph:youtube-logo" class="w-5 h-5" />
-          </a>
+        <div class="flex items-center gap-3 text-sm text-text-muted">
+          <span>Made with</span>
+          <Icon name="ph:heart-fill" class="w-4 h-4 text-pink" />
+          <span>for gamers</span>
         </div>
       </div>
     </div>
@@ -146,14 +140,4 @@ const footerLinks = {
   background-clip: text;
 }
 
-.social-link {
-  @apply p-2.5 text-text-muted rounded-xl transition-all duration-200;
-  background: rgba(139, 92, 246, 0.08);
-}
-
-.social-link:hover {
-  @apply text-brand-light;
-  background: rgba(139, 92, 246, 0.15);
-  transform: translateY(-2px);
-}
 </style>

@@ -8,7 +8,7 @@ useSeoMeta({
 
 // Fetch games from API - use mixed sort for variety
 const { data, pending, error } = await useFetch('/api/games', {
-  query: { limit: 500, sort: 'mixed' },
+  query: { limit: 150, sort: 'mixed' },
 })
 
 // Derived game lists

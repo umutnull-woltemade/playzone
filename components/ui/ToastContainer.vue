@@ -1,52 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-export interface ToastItem {
-  id: number
-  type: 'info' | 'success' | 'warning' | 'error'
-  title?: string
-  message: string
-  duration?: number
-}
-
-const toasts = ref<ToastItem[]>([])
-let toastId = 0
-
-const addToast = (toast: Omit<ToastItem, 'id'>) => {
-  const id = toastId++
-  const duration = toast.duration ?? 5000
-
-  toasts.value.push({ ...toast, id })
-
-  if (duration > 0) {
-    setTimeout(() => {
-      removeToast(id)
-    }, duration)
-  }
-
-  return id
-}
-
-const removeToast = (id: number) => {
-  const index = toasts.value.findIndex((t) => t.id === id)
-  if (index > -1) {
-    toasts.value.splice(index, 1)
-  }
-}
-
-// Expose methods for external use
-defineExpose({
-  addToast,
-  removeToast,
-  success: (message: string, title?: string) =>
-    addToast({ type: 'success', message, title }),
-  error: (message: string, title?: string) =>
-    addToast({ type: 'error', message, title }),
-  warning: (message: string, title?: string) =>
-    addToast({ type: 'warning', message, title }),
-  info: (message: string, title?: string) =>
-    addToast({ type: 'info', message, title }),
-})
+// Use the global toast composable
+const { toasts, remove } = useToast()
 </script>
 
 <template>
@@ -59,7 +13,7 @@ defineExpose({
           :type="toast.type"
           :title="toast.title"
           :message="toast.message"
-          @dismiss="removeToast(toast.id)"
+          @dismiss="remove(toast.id)"
         />
       </TransitionGroup>
     </div>

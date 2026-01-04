@@ -12,6 +12,14 @@ const specialCategories: Record<string, { title: string; icon: string }> = {
   new: { title: 'New Releases', icon: 'ph:sparkle-fill' },
 }
 
+// Valid game categories
+const validCategories = [
+  'all', 'trending', 'popular', 'new',
+  'action', 'adventure', 'arcade', 'puzzle', 'racing',
+  'sports', 'strategy', 'shooter', 'shooting', 'multiplayer',
+  'io', 'casual', 'simulation', 'junior', 'classic', 'retro',
+]
+
 // Normalize category slug (handle shooter/shooting variants)
 const normalizedCategory = computed(() => {
   const s = slug.value.toLowerCase()
@@ -172,18 +180,38 @@ const sortedGames = computed(() => {
         <GameCard v-for="game in sortedGames" :key="game.id" :game="game" />
       </GameGrid>
 
-      <!-- Empty State -->
+      <!-- Empty State / Invalid Category -->
       <div v-else class="text-center py-16">
-        <Icon name="ph:game-controller" class="w-16 h-16 text-text-muted mx-auto mb-4" />
-        <h2 class="text-xl font-semibold text-text-primary mb-2">No games found</h2>
-        <p class="text-text-secondary mb-6">Check back later for new games in this category.</p>
-        <NuxtLink
-          to="/"
-          class="inline-flex items-center gap-2 px-5 py-3 bg-brand text-white font-semibold rounded-xl hover:bg-brand-dark transition-colors shadow-lg shadow-brand/30"
-        >
-          <Icon name="ph:house" class="w-5 h-5" />
-          Back to Home
-        </NuxtLink>
+        <Icon
+          :name="validCategories.includes(slug.toLowerCase()) ? 'ph:game-controller' : 'ph:warning-circle'"
+          class="w-16 h-16 mx-auto mb-4"
+          :class="validCategories.includes(slug.toLowerCase()) ? 'text-text-muted' : 'text-warning'"
+        />
+        <h2 class="text-xl font-semibold text-text-primary mb-2">
+          {{ validCategories.includes(slug.toLowerCase()) ? 'No games found' : 'Category not found' }}
+        </h2>
+        <p class="text-text-secondary mb-6">
+          {{ validCategories.includes(slug.toLowerCase())
+            ? 'Check back later for new games in this category.'
+            : 'This category doesn\'t exist. Try browsing our available categories.'
+          }}
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <NuxtLink
+            to="/"
+            class="inline-flex items-center gap-2 px-5 py-3 bg-brand text-white font-semibold rounded-xl hover:bg-brand-dark transition-colors shadow-lg shadow-brand/30"
+          >
+            <Icon name="ph:house" class="w-5 h-5" />
+            Back to Home
+          </NuxtLink>
+          <NuxtLink
+            to="/category/all"
+            class="inline-flex items-center gap-2 px-5 py-3 bg-bg-surface text-text-primary font-semibold rounded-xl hover:bg-bg-elevated border border-brand/20 transition-colors"
+          >
+            <Icon name="ph:squares-four" class="w-5 h-5" />
+            Browse All Games
+          </NuxtLink>
+        </div>
       </div>
     </template>
   </div>

@@ -11,6 +11,16 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const isHovering = ref(false)
+const imageError = ref(false)
+
+// Fallback image for broken thumbnails
+const fallbackImage = computed(() =>
+  `https://placehold.co/512x384/160f2a/8b5cf6?text=${encodeURIComponent(props.game.title)}&font=roboto`
+)
+
+const imageSrc = computed(() =>
+  imageError.value ? fallbackImage.value : props.game.thumbnail
+)
 
 // Size classes for responsive cards
 const sizeClasses = computed(() => {
@@ -45,10 +55,11 @@ function formatPlays(plays: number): string {
     <!-- Thumbnail -->
     <div class="absolute inset-0 overflow-hidden rounded-2xl">
       <img
-        :src="game.thumbnail"
+        :src="imageSrc"
         :alt="game.title"
         loading="lazy"
         class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+        @error="imageError = true"
       />
 
       <!-- Gradient Overlay -->
