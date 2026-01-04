@@ -357,6 +357,10 @@ async function fetchItchioProviderGames(): Promise<UnifiedGame[]> {
 function getOpenSourceGames(): UnifiedGame[] {
   // Curated list of MIT/Apache/CC licensed HTML5 games
   // All verified to allow free redistribution and embedding
+  // Using placeholder images for games with broken thumbnail URLs
+
+  const placeholder = (name: string, color = '8b5cf6') =>
+    `https://placehold.co/512x384/1a1a2e/${color}?text=${encodeURIComponent(name)}&font=roboto`
 
   return [
     {
@@ -366,7 +370,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'hextris',
       title: 'Hextris',
       description: 'A fast-paced puzzle game inspired by Tetris. Rotate the hexagon and match colors!',
-      thumbnail: 'https://hextris.io/images/og-image.png',
+      thumbnail: placeholder('Hextris', '22d3ee'),
       category: 'Puzzle',
       categories: ['Puzzle', 'Arcade'],
       tags: ['tetris', 'puzzle', 'hexagon', 'fast-paced'],
@@ -432,7 +436,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'pacman-canvas',
       title: 'Pac-Man (HTML5)',
       description: 'The classic arcade game recreated in HTML5 Canvas.',
-      thumbnail: 'https://pacman.platzh1rsch.ch/img/screenshot.png',
+      thumbnail: placeholder('Pac-Man', 'fbbf24'),
       category: 'Arcade',
       categories: ['Arcade', 'Classic', 'Retro'],
       tags: ['pacman', 'arcade', 'classic', 'retro', 'maze'],
@@ -465,7 +469,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'radius-raid',
       title: 'Radius Raid',
       description: 'A space shooter game. Destroy enemies and survive as long as possible!',
-      thumbnail: 'https://play.js13kgames.com/radius-raid/icon.png',
+      thumbnail: placeholder('Radius Raid', 'ef4444'),
       category: 'Shooter',
       categories: ['Shooter', 'Arcade', 'Space'],
       tags: ['space', 'shooter', 'arcade', 'survival'],
@@ -497,7 +501,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'breaklock',
       title: 'BreakLock',
       description: 'A hybrid of Mastermind and the Android pattern lock. Crack the code!',
-      thumbnail: 'https://maxwellito.github.io/breaklock/img/ogImage.png',
+      thumbnail: placeholder('BreakLock', '10b981'),
       category: 'Puzzle',
       categories: ['Puzzle', 'Logic'],
       tags: ['puzzle', 'logic', 'mastermind', 'pattern'],
@@ -530,7 +534,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'underrun',
       title: 'Underrun',
       description: 'A 3D shooter in just 13kb! Navigate dark corridors and eliminate enemies.',
-      thumbnail: 'https://phoboslab.org/files/underrun-title.png',
+      thumbnail: placeholder('Underrun', 'f97316'),
       category: 'Shooter',
       categories: ['Shooter', 'Action', '3D'],
       tags: ['3d', 'shooter', 'action', 'fps', 'retro'],
@@ -563,7 +567,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'space-huggers',
       title: 'Space Huggers',
       description: 'A run-and-gun platformer where you fight aliens with various weapons!',
-      thumbnail: 'https://js13kgames.com/games/space-huggers/cover.png',
+      thumbnail: placeholder('Space Huggers', 'ec4899'),
       category: 'Shooter',
       categories: ['Shooter', 'Action', 'Platformer'],
       tags: ['shooter', 'platformer', 'action', 'aliens', 'weapons'],
@@ -595,7 +599,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'tank-royale',
       title: 'Tank Royale',
       description: 'Battle other tanks in this multiplayer arena shooter!',
-      thumbnail: 'https://robocode-dev.github.io/tank-royale/img/tankRoyale.png',
+      thumbnail: placeholder('Tank Royale', '06b6d4'),
       category: 'Shooter',
       categories: ['Shooter', 'Multiplayer', 'Action'],
       tags: ['tank', 'shooter', 'multiplayer', 'battle', 'arena'],
@@ -627,7 +631,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'asteroid-shooter',
       title: 'Asteroid Shooter',
       description: 'Classic asteroid shooter game. Destroy asteroids and survive in space!',
-      thumbnail: 'https://cdn.jsdelivr.net/gh/nickslevine/asteroid@main/preview.png',
+      thumbnail: placeholder('Asteroids', 'a78bfa'),
       category: 'Shooter',
       categories: ['Shooter', 'Arcade', 'Space'],
       tags: ['asteroid', 'shooter', 'space', 'arcade', 'classic'],
@@ -659,7 +663,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'xibalba',
       title: 'Xibalba',
       description: 'A first-person dungeon crawler shooter. Explore and eliminate enemies!',
-      thumbnail: 'https://js13kgames.com/games/xibalba/cover.png',
+      thumbnail: placeholder('Xibalba', 'dc2626'),
       category: 'Shooter',
       categories: ['Shooter', 'Action', 'FPS'],
       tags: ['fps', 'shooter', 'dungeon', 'action', 'retro'],
@@ -691,7 +695,7 @@ function getOpenSourceGames(): UnifiedGame[] {
       providerId: 'spaceshooter',
       title: 'Space Shooter Pro',
       description: 'Intense space shooter with power-ups and boss battles!',
-      thumbnail: 'https://play.js13kgames.com/spaceshooter/icon.png',
+      thumbnail: placeholder('Space Shooter', '3b82f6'),
       category: 'Shooter',
       categories: ['Shooter', 'Arcade', 'Space'],
       tags: ['space', 'shooter', 'arcade', 'powerups', 'boss'],

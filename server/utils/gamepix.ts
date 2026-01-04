@@ -55,10 +55,10 @@ export async function fetchGamePixGames(options: {
 
     const data = await response.json()
 
-    // Handle different response formats
+    // Handle different response formats - API returns { status, code, data: [...] }
     const games: GamePixGame[] = Array.isArray(data)
       ? data
-      : (data.games || data.data || [])
+      : (data.data || data.games || [])
 
     // Sort by rkScore (popularity) and limit
     return games

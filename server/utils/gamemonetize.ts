@@ -7,7 +7,7 @@ export const GAMEMONETIZE_CONFIG = {
   baseUrl: 'https://rss.gamemonetize.com/rssfeed.php',
   defaultParams: {
     format: 'json',
-    type: 'html5',
+    type: '0', // 0 = HTML5 games
     company: 'All',
   },
 }
@@ -17,15 +17,13 @@ export const GAMEMONETIZE_CONFIG = {
  */
 export async function fetchGameMonetizeGames(options: {
   category?: string
-  popularity?: 'newest' | 'most popular' | 'hot games' | 'best games'
   amount?: number
 } = {}): Promise<GameMonetizeGame[]> {
-  const { category = 'All', popularity = 'best games', amount = 500 } = options
+  const { category = 'All', amount = 500 } = options
 
   const params = new URLSearchParams({
     ...GAMEMONETIZE_CONFIG.defaultParams,
     category,
-    popularity,
     amount: String(amount),
   })
 
